@@ -43,6 +43,9 @@ AUnrealRpgCharacter::AUnrealRpgCharacter()
 
 //////////////////////////////////////////////////////////////////////////
 // Input
+// TODO: Change input detection to be handled by the Controller class
+
+// controller will then call appropriate movement functions on the character
 
 void AUnrealRpgCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
