@@ -15,5 +15,6 @@ AUnrealRpgGameMode::AUnrealRpgGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
-	// set the default 
+	// set the default player controller
+	PlayerControllerClass = AUnrealRpgPlayerController::StaticClass();
 }
