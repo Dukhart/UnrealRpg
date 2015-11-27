@@ -5,4 +5,4 @@
 
 
 // Default Player Assets
-const FString FURLs::DefaultPlayerCharacterBP = FString("APlayerCharacter'/Game/StarterContent/ThirdPersonCPP/Blueprints/ThirdPersonCharacter.ThirdPersonCharacter_C'");
+const FString FURLs::DefaultPlayerCharacterBP = FString("APlayerCharacter'/Game/Blueprints/Characters/Player/Human/Male/BasicMale/PlayerCharacterBasicMaleBP.PlayerCharacterBasicMaleBP_C'");
