@@ -2,20 +2,20 @@
 
 #include "UnrealRpg.h"
 #include "UnrealRpgPlayerCharacter.h"
-#include "Animation/AnimBlueprint.h"
-#include "Animation/AnimBlueprintGeneratedClass.h"
+
 
 
 
 
 AUnrealRpgPlayerCharacter::AUnrealRpgPlayerCharacter() {
-
+	// get the refrence to our character Mesh asset
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshObj(*FURLs::DefaultPlayerCharacterMesh);
+	// get the refrence to our character animation asset
 	static ConstructorHelpers::FObjectFinder<UAnimBlueprintGeneratedClass> AnimBp(*FURLs::DefualtPlayerAnimationBP);
 	if (MeshObj.Object && GetMesh() != NULL) {
 		// Set the new Mesh
 		GetMesh()->SetSkeletalMesh(MeshObj.Object);
-		// Set the Mesh local posistion
+		// Set the Mesh LOCAL posistion and rotation
 		FRotator rotation;
 		rotation.Yaw = -90.0f;
 		rotation.Roll = 0.0f;
