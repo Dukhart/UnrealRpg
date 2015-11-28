@@ -15,11 +15,17 @@ class UNREALRPG_API AUnrealRpgPlayerController : public APlayerController
 	AUnrealRpgPlayerController();
 protected:
 	virtual void SetupInputComponent() override;
-	bool bInvertLookYAxis;
-	bool bInvertLookXAxis;
 	float baseTurnRate;
 	float baseLookRate;
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controls)
+		bool bInvertLookYAxis;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controls)
+		bool bInvertLookXAxis;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input)
+		float MoveValX;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input)
+		float MoveValY;
 	// Switch between Controller/Camera styles
 	virtual void ActivateFirstPersonCamera();
 	virtual void ActivateOverShoulderCamera();
@@ -27,7 +33,6 @@ public:
 	virtual void ActivateSkyViewCamera();
 	// Detaches camera and controls from player character, operates like a spectator
 	virtual void ActivateFreeCamera();
-
 
 	// Detect Character Movement Input
 	virtual void MoveStrafe(float value);
