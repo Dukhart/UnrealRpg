@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jordan Duncan 2015 \\
 
 #pragma once
 #include "URLs.generated.h"
@@ -13,7 +13,7 @@ public:
 	// Default Player assets
 	static const FString DefaultPlayerCharacterBP;
 	static const FString DefaultPlayerCharacterMesh;
-	static const FString DefualtPlayerAnimationController;
+	static const FString DefualtPlayerAnimationBP;
 	static const FString DefaultPlayerControllerBp;
 	static const FString DefaultPlayerCameraManagerBp;
 };

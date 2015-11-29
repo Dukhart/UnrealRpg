@@ -6,10 +6,15 @@
 
 AUnrealRpgGameMode::AUnrealRpgGameMode()
 {
-	// set default pawn class to our Blueprinted character
+	// Set the default player pawn
+	// Failsafe
+	DefaultPawnClass = AUnrealRpgPlayerCharacter::StaticClass();
+	// Blueprinted Version, relies on the asset path obtained from the editor
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(*FURLs::DefaultPlayerCharacterBP);
 	if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+	// set the default player controller
+	PlayerControllerClass = AUnrealRpgPlayerController::StaticClass();
 }
