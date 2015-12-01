@@ -14,6 +14,6 @@ AUnrealRpgPlayerCameraManager::AUnrealRpgPlayerCameraManager() {
 void AUnrealRpgPlayerCameraManager::SetCameraMode(ECameraMode newCameraMode) {
 	eCurrentCameraMode = newCameraMode;
 }
-ECameraMode AUnrealRpgPlayerCameraManager::GetCurrentCameraMode() {
+ECameraMode AUnrealRpgPlayerCameraManager::GetCameraMode() {
 	return eCurrentCameraMode;
 }

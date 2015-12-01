@@ -68,3 +68,6 @@ void AUnrealRpgPlayerCharacter::SetupPlayerInputComponent(class UInputComponent*
 	InputComponent->BindTouch(IE_Released, this, &AUnrealRpgCharacter::TouchStopped);
 	*/
 }
+void AUnrealRpgPlayerCharacter::BeginPlay() {
+	Super::BeginPlay();
+}

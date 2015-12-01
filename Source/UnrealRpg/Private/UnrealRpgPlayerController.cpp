@@ -4,12 +4,13 @@
 #include "UnrealRpgPlayerController.h"
 
 
-
+// Constructor
 AUnrealRpgPlayerController::AUnrealRpgPlayerController() {
 	PlayerCameraManagerClass = AUnrealRpgPlayerCameraManager::StaticClass();
 	bInvertLookXAxis = false;
 	bInvertLookYAxis = true;
 }
+// Binds user input to functions
 void AUnrealRpgPlayerController::SetupInputComponent() {
 	// Call Super Setup Input Component to get the InputCompent ready to Bind our custom Inputs
 	Super::SetupInputComponent();
@@ -25,14 +26,41 @@ void AUnrealRpgPlayerController::SetupInputComponent() {
 		// Bind Input BUTTONS
 	}
 }
-
+// activated when the controller spawns
+void AUnrealRpgPlayerController::BeginPlay() {
+	Super::BeginPlay();
+	// set the active camera mode
+	ECameraMode eCameraRef = Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->GetCameraMode();
+	switch (eCameraRef)
+	{
+	case ECameraMode::FirstPerson:
+		ActivateFirstPersonCamera();
+		break;
+	case ECameraMode::OverShoulder:
+		ActivateOverShoulderCamera();
+		break;
+	case ECameraMode::FreeRange:
+		ActivateFreeRangeCamera();
+		break;
+	case ECameraMode::SkyViewCamera:
+		ActivateSkyViewCamera();
+		break;
+	case ECameraMode::FreeCamera:
+		ActivateFreeCamera();
+		break;
+	default:
+		break;
+	}
+}
+// INPUT
+// Handles moving the player in a strafing manner
 void AUnrealRpgPlayerController::MoveStrafe(float value) {
 	if (GetPawn() != NULL && value != 0.0f)
 	{
 		FRotator RotationControlSpace;
 		FRotator YawRotation;
 		FVector Direction;
-		ECameraMode eCurrentCameraRef = Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->GetCurrentCameraMode();
+		ECameraMode eCurrentCameraRef = Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->GetCameraMode();
 
 		switch (eCurrentCameraRef)
 		{
@@ -61,13 +89,14 @@ void AUnrealRpgPlayerController::MoveStrafe(float value) {
 		MoveValX = value;
 	}
 }
+// Handles Forward and Back input
 void AUnrealRpgPlayerController::MoveForwardBack(float value) {
 	if (GetPawn() != NULL && value != 0.0f) {
 		FRotator RotationControlSpace;
 		FRotator YawRotation;
 		FVector Direction;
 
-		ECameraMode eCurrentCameraRef = Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->GetCurrentCameraMode();
+		ECameraMode eCurrentCameraRef = Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->GetCameraMode();
 		
 		switch (eCurrentCameraRef)
 		{
@@ -113,31 +142,34 @@ void AUnrealRpgPlayerController::LookRightLeft(float value) {
 	}
 	AddYawInput(value);
 }
-// Activates the chosen camera mode
+// CAMERA
+// Activates First Person Camera
 void AUnrealRpgPlayerController::ActivateFirstPersonCamera() {
 	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FirstPerson);
 }
+// Activates Over the Shoulder Camera
 void AUnrealRpgPlayerController::ActivateOverShoulderCamera() {
-	if (GetCharacter() != NULL) {
-		GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
-	}
 	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::OverShoulder);
-	if (GetPawn() != NULL) {
+	if (GetCharacter() != NULL && GetPawn() != NULL) {
 		APawn* pawnRef = GetPawn();
+		GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
 		pawnRef->bUseControllerRotationPitch = false;
 		pawnRef->bUseControllerRotationYaw = false;
 		pawnRef->bUseControllerRotationRoll = false;
 	}
 }
+// Activates Free Range Camera
 void AUnrealRpgPlayerController::ActivateFreeRangeCamera() {
 	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FreeRange);
 }
+// Activates Skyview Camera
 void AUnrealRpgPlayerController::ActivateSkyViewCamera() {
 	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::SkyViewCamera);
 }
+// Activates Free Camera
 void AUnrealRpgPlayerController::ActivateFreeCamera() {
 	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FreeCamera);

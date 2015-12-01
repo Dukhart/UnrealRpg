@@ -14,6 +14,7 @@ class UNREALRPG_API AUnrealRpgPlayerController : public APlayerController
 	GENERATED_BODY()
 	AUnrealRpgPlayerController();
 protected:
+	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	float baseTurnRate;
 	float baseLookRate;
