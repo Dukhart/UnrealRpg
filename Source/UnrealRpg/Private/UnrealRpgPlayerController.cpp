@@ -9,7 +9,6 @@ AUnrealRpgPlayerController::AUnrealRpgPlayerController() {
 	PlayerCameraManagerClass = AUnrealRpgPlayerCameraManager::StaticClass();
 	bInvertLookXAxis = false;
 	bInvertLookYAxis = true;
-	
 }
 void AUnrealRpgPlayerController::SetupInputComponent() {
 	// Call Super Setup Input Component to get the InputCompent ready to Bind our custom Inputs
@@ -67,6 +66,7 @@ void AUnrealRpgPlayerController::MoveForwardBack(float value) {
 		FRotator RotationControlSpace;
 		FRotator YawRotation;
 		FVector Direction;
+
 		ECameraMode eCurrentCameraRef = Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->GetCurrentCameraMode();
 		
 		switch (eCurrentCameraRef)
@@ -113,19 +113,32 @@ void AUnrealRpgPlayerController::LookRightLeft(float value) {
 	}
 	AddYawInput(value);
 }
-
+// Activates the chosen camera mode
 void AUnrealRpgPlayerController::ActivateFirstPersonCamera() {
-
+	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FirstPerson);
 }
 void AUnrealRpgPlayerController::ActivateOverShoulderCamera() {
-	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
+	if (GetCharacter() != NULL) {
+		GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::OverShoulder);
+	if (GetPawn() != NULL) {
+		APawn* pawnRef = GetPawn();
+		pawnRef->bUseControllerRotationPitch = false;
+		pawnRef->bUseControllerRotationYaw = false;
+		pawnRef->bUseControllerRotationRoll = false;
+	}
 }
 void AUnrealRpgPlayerController::ActivateFreeRangeCamera() {
-
+	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FreeRange);
 }
 void AUnrealRpgPlayerController::ActivateSkyViewCamera() {
-
+	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::SkyViewCamera);
 }
 void AUnrealRpgPlayerController::ActivateFreeCamera() {
-
+	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FreeCamera);
 }
