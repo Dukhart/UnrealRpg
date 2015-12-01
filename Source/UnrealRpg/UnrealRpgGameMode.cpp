@@ -17,4 +17,8 @@ AUnrealRpgGameMode::AUnrealRpgGameMode()
 	}
 	// set the default player controller
 	PlayerControllerClass = AUnrealRpgPlayerController::StaticClass();
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBpClass(*FURLs::DefaultPlayerControllerBp);
+	if (PlayerControllerBpClass.Class != NULL) {
+		PlayerControllerClass = PlayerControllerBpClass.Class;
+	}
 }

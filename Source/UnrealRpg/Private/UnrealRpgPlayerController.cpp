@@ -6,7 +6,16 @@
 
 // Constructor
 AUnrealRpgPlayerController::AUnrealRpgPlayerController() {
+	/* Sets the player camera manager
+	* @param fail safe assigns the player camera manager to the c++ template
+	* @param attempts to find blueprint based off of c++ template and assign it as the camera manager
+	*/
 	PlayerCameraManagerClass = AUnrealRpgPlayerCameraManager::StaticClass();
+	static ConstructorHelpers::FClassFinder<APlayerCameraManager> PlayerCameraManagerBpClass(*FURLs::DefaultPlayerCameraManagerBp);
+	if (PlayerCameraManagerBpClass.Class != NULL) {
+		PlayerCameraManagerClass = PlayerCameraManagerBpClass.Class;
+	}
+	// sets the default invert look params
 	bInvertLookXAxis = false;
 	bInvertLookYAxis = true;
 }

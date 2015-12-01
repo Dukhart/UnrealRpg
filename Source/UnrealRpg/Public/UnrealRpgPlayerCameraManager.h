@@ -29,4 +29,5 @@ protected:
 	ECameraMode eCurrentCameraMode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CameraSettings)
 	ECameraMode eDefaultCameraMode;
+	virtual void BeginPlay() override;
 };
