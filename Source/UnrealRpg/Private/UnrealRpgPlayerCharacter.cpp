@@ -41,6 +41,7 @@ AUnrealRpgPlayerCharacter::AUnrealRpgPlayerCharacter() {
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationRoll = false;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 }
 void AUnrealRpgPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)

@@ -30,28 +30,71 @@ void AUnrealRpgPlayerController::SetupInputComponent() {
 void AUnrealRpgPlayerController::MoveStrafe(float value) {
 	if (GetPawn() != NULL && value != 0.0f)
 	{
-		// find out which way is right
-		const FRotator RotationControlSpace = GetControlRotation();
-		const FRotator YawRotation(0, RotationControlSpace.Yaw, 0);
-		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		GetPawn()->AddMovementInput(Direction, value);
+		FRotator RotationControlSpace;
+		FRotator YawRotation;
+		FVector Direction;
+		ECameraMode eCurrentCameraRef = Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->GetCurrentCameraMode();
+
+		switch (eCurrentCameraRef)
+		{
+		case ECameraMode::FirstPerson:
+			break;
+		case ECameraMode::OverShoulder:
+			RotationControlSpace = PlayerCameraManager->GetCameraRotation();
+			YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
+			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			GetPawn()->SetActorRotation(YawRotation);
+			GetPawn()->AddMovementInput(Direction, value);
+			MoveValX = value;
+			break;
+		case ECameraMode::FreeRange:
+			break;
+		case ECameraMode::SkyViewCamera:
+			break;
+		case ECameraMode::FreeCamera:
+			break;
+		default:
+			break;
+		}
 	}
-	MoveValX = value;
+	else
+	{
+		MoveValX = value;
+	}
 }
 void AUnrealRpgPlayerController::MoveForwardBack(float value) {
 	if (GetPawn() != NULL && value != 0.0f) {
-		// find out which way is forward
-		const FRotator RotationControlSpace = GetControlRotation();
-		const FRotator YawRotation(0, RotationControlSpace.Yaw, 0);
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		//const FVector Direction = FRotationMatrix(ControlSpaceRot).GetScaledAxis(EAxis::Y)
-		// transform to world space and add it
-		GetPawn()->AddMovementInput(Direction, value);
+		FRotator RotationControlSpace;
+		FRotator YawRotation;
+		FVector Direction;
+		ECameraMode eCurrentCameraRef = Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->GetCurrentCameraMode();
+		
+		switch (eCurrentCameraRef)
+		{
+		case ECameraMode::FirstPerson:
+			break;
+		case ECameraMode::OverShoulder:
+			RotationControlSpace = PlayerCameraManager->GetCameraRotation();
+			YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
+			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			GetPawn()->SetActorRotation(YawRotation);
+			GetPawn()->AddMovementInput(Direction, value);
+			MoveValY = value;
+			break;
+		case ECameraMode::FreeRange:
+			break;
+		case ECameraMode::SkyViewCamera:
+			break;
+		case ECameraMode::FreeCamera:
+			break;
+		default:
+			break;
+		}
 	}
-	MoveValY = value;
+	else
+	{
+		MoveValY = value;
+	}
 }
 void AUnrealRpgPlayerController::MoveJump(float value) {
 
@@ -69,14 +112,13 @@ void AUnrealRpgPlayerController::LookRightLeft(float value) {
 		value *= -1.0f;
 	}
 	AddYawInput(value);
-	
 }
 
 void AUnrealRpgPlayerController::ActivateFirstPersonCamera() {
 
 }
 void AUnrealRpgPlayerController::ActivateOverShoulderCamera() {
-
+	GetCharacter()->GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 void AUnrealRpgPlayerController::ActivateFreeRangeCamera() {
 
