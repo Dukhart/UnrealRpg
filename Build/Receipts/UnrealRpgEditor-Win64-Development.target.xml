@@ -7,9 +7,9 @@
     <Property Name="Precompile" Value="False" />
   </Properties>
   <BuildProducts>
-    <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-UnrealRpg-4564.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-UnrealRpg-4564.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(ProjectDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UnrealRpg-4564.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-UnrealRpg.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-UnrealRpg.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(ProjectDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UnrealRpg.lib" Type="ImportLibrary" />
   </BuildProducts>
   <RuntimeDependencies />
   <AdditionalProperties />

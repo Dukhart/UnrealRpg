@@ -10,3 +10,7 @@ AUnrealRpgPlayerCameraManager::AUnrealRpgPlayerCameraManager() {
 	eDefaultCameraMode = ECameraMode::OverShoulder;
 	eCurrentCameraMode = eDefaultCameraMode;
 }
+
+void AUnrealRpgPlayerCameraManager::SetCameraMode(ECameraMode newCameraMode) {
+	eCurrentCameraMode = newCameraMode;
+}
