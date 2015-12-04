@@ -89,7 +89,6 @@ void AUnrealRpgPlayerController::MoveStrafe(float value) {
 			RotationControlSpace = GetControlRotation();
 			YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			GetPawn()->SetActorRotation(YawRotation);
 			GetPawn()->AddMovementInput(Direction, value);
 			if (value < 0.0f) {
 				value *= -1.0f;
@@ -134,7 +133,6 @@ void AUnrealRpgPlayerController::MoveForwardBack(float value) {
 			RotationControlSpace = GetControlRotation();
 			YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-			GetPawn()->SetActorRotation(YawRotation);
 			GetPawn()->AddMovementInput(Direction, value);
 			if (value < 0.0f) {
 				value *= -1.0f;
