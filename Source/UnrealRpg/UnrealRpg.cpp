@@ -11,7 +11,7 @@ DEFINE_LOG_CATEGORY(AILog);
 //Logging for Critical Errors that MUST be addressed
 DEFINE_LOG_CATEGORY(CriticalErrorsLog);
 //"This is a message to yourself during runtime!"
-//UE_LOG(YourLog, Warning, TEXT("This is a message to yourself during runtime!"));
+//UE_LOG(InitLog, Warning, TEXT("This is a message to yourself during runtime!"));
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, UnrealRpg, "UnrealRpg" );
  

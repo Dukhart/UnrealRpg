@@ -39,10 +39,10 @@ AUnrealRpgPlayerCharacter::AUnrealRpgPlayerCharacter() {
 		PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 		PlayerCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 		PlayerCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-		bUseControllerRotationPitch = false;
-		bUseControllerRotationYaw = false;
-		bUseControllerRotationRoll = false;
-		GetCharacterMovement()->bOrientRotationToMovement = false;
+		//bUseControllerRotationPitch = false;
+		//bUseControllerRotationYaw = false;
+		//bUseControllerRotationRoll = false;
+		//GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 }
 void AUnrealRpgPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
