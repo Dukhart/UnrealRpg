@@ -40,7 +40,9 @@ public:
 	virtual void MoveForwardBack(float value);
 	virtual void MoveJump(float value);
 	// Detect Camera Movement Input
+	virtual void LookUpDownRate(float value);
 	virtual void LookUpDown(float value);
+	virtual void LookRightLeftRate(float value);
 	virtual void LookRightLeft(float value);
 
 };

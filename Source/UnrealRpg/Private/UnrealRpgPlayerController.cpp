@@ -15,9 +15,11 @@ AUnrealRpgPlayerController::AUnrealRpgPlayerController() {
 	if (PlayerCameraManagerBpClass.Class != NULL) {
 		PlayerCameraManagerClass = PlayerCameraManagerBpClass.Class;
 	}
-	// sets the default invert look params
+	// sets the default look params
 	bInvertLookXAxis = false;
 	bInvertLookYAxis = true;
+	baseTurnRate = 45.0f;
+	baseLookRate = 45.0f;
 }
 // Binds user input to functions
 void AUnrealRpgPlayerController::SetupInputComponent() {
@@ -30,7 +32,9 @@ void AUnrealRpgPlayerController::SetupInputComponent() {
 		// Bind Input AXIS
 		InputComponent->BindAxis("Move_Strafe", this, &AUnrealRpgPlayerController::MoveStrafe);
 		InputComponent->BindAxis("Move_ForwardBackward", this, &AUnrealRpgPlayerController::MoveForwardBack);
+		InputComponent->BindAxis("Look_UpDownRate", this, &AUnrealRpgPlayerController::LookUpDownRate);
 		InputComponent->BindAxis("Look_UpDown", this, &AUnrealRpgPlayerController::LookUpDown);
+		InputComponent->BindAxis("Look_RightLeftRate", this, &AUnrealRpgPlayerController::LookRightLeftRate);
 		InputComponent->BindAxis("Look_RightLeft", this, &AUnrealRpgPlayerController::LookRightLeft);
 		// Bind Input BUTTONS
 	}
@@ -155,13 +159,25 @@ void AUnrealRpgPlayerController::MoveForwardBack(float value) {
 void AUnrealRpgPlayerController::MoveJump(float value) {
 
 }
-
+void AUnrealRpgPlayerController::LookUpDownRate(float value) {
+	if (bInvertLookYAxis) {
+		value *= -1.0f;
+	}
+	// calculate delta for this frame from the rate information
+	AddPitchInput(value * baseLookRate * GetWorld()->GetDeltaSeconds());
+}
 void AUnrealRpgPlayerController::LookUpDown(float value) {
 	if (bInvertLookYAxis) {
 		value *= -1.0f;
 	}
 	AddPitchInput(value);
-	
+}
+void AUnrealRpgPlayerController::LookRightLeftRate(float value) {
+	if (bInvertLookXAxis) {
+		value *= -1.0f;
+	}
+	// calculate delta for this frame from the rate information
+	AddYawInput(value * baseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 void AUnrealRpgPlayerController::LookRightLeft(float value) {
 	if (bInvertLookXAxis) {
