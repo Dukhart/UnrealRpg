@@ -24,9 +24,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controls)
 		bool bInvertLookXAxis;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input)
-		float MoveValX;
+		float MoveValX; // used by the animator to detect pawn movement in the X axis (X axis being the local pawn X not the world X)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input)
-		float MoveValY;
+		float MoveValY; // used by the animator to detect pawn movement in the Y axis (Y axis being the local pawn X not the world X)
 	// Switch between Controller/Camera styles
 	virtual void ActivateFirstPersonCamera();
 	virtual void ActivateOverShoulderCamera();

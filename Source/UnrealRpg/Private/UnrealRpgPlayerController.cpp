@@ -125,7 +125,7 @@ void AUnrealRpgPlayerController::MoveForwardBack(float value) {
 		{
 		case ECameraMode::FirstPerson:
 			break;
-		case ECameraMode::OverShoulder:
+		case ECameraMode::OverShoulder: // Over the shoulder camera behavior for forward back input
 			RotationControlSpace = PlayerCameraManager->GetCameraRotation();
 			YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
@@ -133,15 +133,25 @@ void AUnrealRpgPlayerController::MoveForwardBack(float value) {
 			GetPawn()->AddMovementInput(Direction, value);
 			MoveValY = value;
 			break;
-		case ECameraMode::FreeRange:
-			RotationControlSpace = GetControlRotation();
+		case ECameraMode::FreeRange: // Free Range camera behavior for forward back input
+			RotationControlSpace = GetControlRotation(); 
 			YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 			GetPawn()->AddMovementInput(Direction, value);
+			// In free range mode when not locked on all move directions will be considered forward by the animator
 			if (value < 0.0f) {
 				value *= -1.0f;
 			}
 			MoveValY = value;
+			if (Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->fixedCamera == false) {
+				FRotator pawnRot = GetPawn()->GetActorRotation();
+				FRotator cameraRotation = PlayerCameraManager->GetCameraRotation();
+				if (pawnRot != cameraRotation) {
+
+
+					AddYawInput(0.0f);
+				}
+			}
 			break;
 		case ECameraMode::SkyViewCamera:
 			break;
@@ -193,7 +203,12 @@ void AUnrealRpgPlayerController::ActivateFirstPersonCamera() {
 	if (GetCharacter() != NULL) {
 		// get a refrence to the player character
 		AUnrealRpgPlayerCharacter* characterRef = Cast<AUnrealRpgPlayerCharacter>(GetCharacter());
-
+		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) != characterRef->GetCameraBoom()) {
+			// remove the camera from current parent
+			characterRef->GetPlayerCamera()->DetachFromParent();
+			UE_LOG(DebugLog, Warning, TEXT("attaching Cam to player pawn's Camera boom"));
+			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetCameraBoom(), USpringArmComponent::SocketName);
+		}
 		//characterRef->GetCharacterMovement()->bOrientRotationToMovement = false;
 		//characterRef->bUseControllerRotationPitch = false;
 		//characterRef->bUseControllerRotationYaw = false;
@@ -207,7 +222,12 @@ void AUnrealRpgPlayerController::ActivateOverShoulderCamera() {
 	if (GetCharacter() != NULL) {
 		// get a refrence to the player character
 		AUnrealRpgPlayerCharacter* characterRef = Cast<AUnrealRpgPlayerCharacter>(GetCharacter());
-		
+		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) != characterRef->GetCameraBoom()) {
+			// remove the camera from current parent
+			characterRef->GetPlayerCamera()->DetachFromParent();
+			UE_LOG(DebugLog, Warning, TEXT("attaching Cam to player pawn's Camera boom"));
+			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetCameraBoom(), USpringArmComponent::SocketName);
+		}
 		characterRef->GetCharacterMovement()->bOrientRotationToMovement = false;
 		characterRef->bUseControllerRotationPitch = false;
 		characterRef->bUseControllerRotationYaw = false;
@@ -219,9 +239,17 @@ void AUnrealRpgPlayerController::ActivateFreeRangeCamera() {
 	UE_LOG(InitLog, Warning, TEXT("ACTIVATING FreeRange CameraMode"));
 	Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FreeRange);
 	if (GetCharacter() != NULL) {
+
 		// get a refrence to the player character
 		AUnrealRpgPlayerCharacter* characterRef = Cast<AUnrealRpgPlayerCharacter>(GetCharacter());
-
+		
+		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) != characterRef->GetCameraBoom()) {
+			// remove the camera from current parent
+			characterRef->GetPlayerCamera()->DetachFromParent();
+			UE_LOG(DebugLog, Warning, TEXT("attaching Cam to player pawn's Camera boom"));
+			// attach the camera to the player pawn's camera boom
+			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetCameraBoom(), USpringArmComponent::SocketName);
+		}
 		characterRef->GetCharacterMovement()->bOrientRotationToMovement = true;
 		characterRef->bUseControllerRotationPitch = false;
 		characterRef->bUseControllerRotationYaw = false;
@@ -235,7 +263,12 @@ void AUnrealRpgPlayerController::ActivateSkyViewCamera() {
 	if (GetCharacter() != NULL) {
 		// get a refrence to the player character
 		AUnrealRpgPlayerCharacter* characterRef = Cast<AUnrealRpgPlayerCharacter>(GetCharacter());
-
+		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) != characterRef->GetCameraBoom()) {
+			// remove the camera from current parent
+			characterRef->GetPlayerCamera()->DetachFromParent();
+			UE_LOG(DebugLog, Warning, TEXT("attaching Cam to player pawn's Camera boom"));
+			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetCameraBoom(), USpringArmComponent::SocketName);
+		}
 		//characterRef->GetCharacterMovement()->bOrientRotationToMovement = false;
 		//characterRef->bUseControllerRotationPitch = false;
 		//characterRef->bUseControllerRotationYaw = false;
@@ -249,7 +282,12 @@ void AUnrealRpgPlayerController::ActivateFreeCamera() {
 	if (GetCharacter() != NULL) {
 		// get a refrence to the player character
 		AUnrealRpgPlayerCharacter* characterRef = Cast<AUnrealRpgPlayerCharacter>(GetCharacter());
-
+		
+		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) == characterRef->GetCameraBoom()) {
+			// remove the camera from current parent
+			characterRef->GetPlayerCamera()->DetachFromParent();
+			UE_LOG(DebugLog, Warning, TEXT("detaching Cam to player pawn's Camera boom"));
+		}
 		//characterRef->GetCharacterMovement()->bOrientRotationToMovement = false;
 		//characterRef->bUseControllerRotationPitch = false;
 		//characterRef->bUseControllerRotationYaw = false;

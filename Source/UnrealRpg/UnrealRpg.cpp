@@ -4,6 +4,8 @@
 
 //General Log
 DEFINE_LOG_CATEGORY(GeneralLog);
+//General debug Log
+DEFINE_LOG_CATEGORY(DebugLog);
 //Logging during game startup
 DEFINE_LOG_CATEGORY(InitLog);
 //Logging for the AI system

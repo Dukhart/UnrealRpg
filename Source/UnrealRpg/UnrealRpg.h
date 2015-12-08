@@ -13,6 +13,8 @@
 #include "UnrealRpgPlayerCameraManager.h"
 //General Log
 DECLARE_LOG_CATEGORY_EXTERN(GeneralLog, Log, All);
+//General debug Log
+DECLARE_LOG_CATEGORY_EXTERN(DebugLog, Log, All);
 //Logging during game startup
 DECLARE_LOG_CATEGORY_EXTERN(InitLog, Log, All);
 //Logging for your AI system

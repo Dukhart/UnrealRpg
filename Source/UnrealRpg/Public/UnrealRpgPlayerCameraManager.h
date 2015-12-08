@@ -22,6 +22,7 @@ class UNREALRPG_API AUnrealRpgPlayerCameraManager : public APlayerCameraManager
 	GENERATED_BODY()
 	AUnrealRpgPlayerCameraManager();
 public:
+	bool fixedCamera;
 	virtual void SetCameraMode(ECameraMode newCameraMode);
 	UFUNCTION(BlueprintCallable, Category = CameraSettings)
 	virtual ECameraMode GetCameraMode();
