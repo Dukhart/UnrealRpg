@@ -9,11 +9,12 @@
 UENUM(BlueprintType)
 enum class ECameraMode : uint8
 {
-	FirstPerson,
-	OverShoulder,
-	FreeRange,
-	SkyViewCamera,
-	FreeCamera
+	FirstPerson, // standard first person camera with head bob options forr a more real feel.
+	OverShoulder, // 3rd person camera locked in behind the player pawn 
+	FreeRange, // Free moving camera locked in orbit around the player pawn (Similar to Darksouls or Batman Arkham games)
+	SkyViewCamera, // Top down view center locked to player pawn (similar to Diablo or Torchlight)
+	TacticalCamera, // Top down camera locked within a distance from the player pawn or pawns
+	FreeCamera // completely free moving camera with option ground and wall collision completely disconnected from player pawn (Similar to a spectator controller)
 };
 
 UCLASS()

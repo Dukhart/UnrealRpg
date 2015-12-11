@@ -16,4 +16,6 @@ public:
 	static const FString DefualtPlayerAnimationBP;
 	static const FString DefaultPlayerControllerBp;
 	static const FString DefaultPlayerCameraManagerBp;
+	// Default HUD assets
+	static const FString DefaultCrosshiarTexture;
 };
