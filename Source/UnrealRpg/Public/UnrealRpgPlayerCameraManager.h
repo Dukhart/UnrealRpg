@@ -21,8 +21,9 @@ UCLASS()
 class UNREALRPG_API AUnrealRpgPlayerCameraManager : public APlayerCameraManager
 {
 	GENERATED_BODY()
-	AUnrealRpgPlayerCameraManager();
+	
 public:
+	AUnrealRpgPlayerCameraManager(const FObjectInitializer& ObjectInitializer);
 	bool fixedCamera;
 	virtual void SetCameraMode(ECameraMode newCameraMode);
 	UFUNCTION(BlueprintCallable, Category = CameraSettings)

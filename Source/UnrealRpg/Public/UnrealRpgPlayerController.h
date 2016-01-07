@@ -12,7 +12,8 @@ UCLASS()
 class UNREALRPG_API AUnrealRpgPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	AUnrealRpgPlayerController();
+public:
+	AUnrealRpgPlayerController(const FObjectInitializer& ObjectInitializer);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

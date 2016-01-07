@@ -9,7 +9,7 @@ class AUnrealRpgGameMode : public AGameMode
 	GENERATED_BODY()
 
 public:
-	AUnrealRpgGameMode();
+	AUnrealRpgGameMode(const FObjectInitializer& ObjectInitializer);
 };
 
 

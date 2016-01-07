@@ -8,11 +8,19 @@
 
 
 
-AUnrealRpgHUD::AUnrealRpgHUD() {
+AUnrealRpgHUD::AUnrealRpgHUD(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer) {
 	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshiarTextureObj(*FURLs::DefaultCrosshiarTexture);
 	CrosshiarText = CrosshiarTextureObj.Object;
 }
-
+// will handle loading texture2D assets at runtime so we don't have to load them all at the same time in the header
+UTexture2D* AUnrealRpgHUD::LoadTexture2D(FString tPath) {
+	FStreamableManager* stream = new FStreamableManager;
+	//Get a refrence to the object based on th input string
+	FStringAssetReference ref(tPath);
+	//Load the object through the StreamableManager and cast it to a Texture2D as it will return a UObject
+	return Cast<UTexture2D>(stream->SynchronousLoad(ref));
+}
 void AUnrealRpgHUD::DrawHUD() {
 	Super::DrawHUD();
 	// Get players current camera mode

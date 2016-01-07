@@ -3,7 +3,7 @@
 #ifndef __UNREALRPG_H__
 #define __UNREALRPG_H__
 
-#include "EngineMinimal.h"
+#include "Engine.h"
 // custom strings
 #include "Strings.h" // will be used for translating in game text elements between Languages
 #include "URLs.h"
@@ -11,6 +11,8 @@
 #include "UnrealRpgPlayerController.h"
 #include "UnrealRpgPlayerCharacter.h"
 #include "UnrealRpgPlayerCameraManager.h"
+#include "UnrealRpgHUD.h"
+#include "UnrealRpgGameInstance.h"
 //General Log
 DECLARE_LOG_CATEGORY_EXTERN(GeneralLog, Log, All);
 //General debug Log

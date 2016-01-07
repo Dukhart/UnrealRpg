@@ -20,7 +20,7 @@ class UNREALRPG_API AUnrealRpgPlayerCharacter : public AUnrealRpgCharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
 public:
-	AUnrealRpgPlayerCharacter();
+	AUnrealRpgPlayerCharacter(const FObjectInitializer& ObjectInitializer);
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;

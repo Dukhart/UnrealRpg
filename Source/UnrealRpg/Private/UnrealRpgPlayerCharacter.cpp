@@ -7,7 +7,8 @@
 
 
 
-AUnrealRpgPlayerCharacter::AUnrealRpgPlayerCharacter() {
+AUnrealRpgPlayerCharacter::AUnrealRpgPlayerCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer) {
 	// get the refrence to our character Mesh asset
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshObj(*FURLs::DefaultPlayerCharacterMesh);
 	// get the refrence to our character animation asset

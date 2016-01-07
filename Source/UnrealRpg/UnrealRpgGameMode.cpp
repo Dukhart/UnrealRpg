@@ -4,8 +4,8 @@
 #include "UnrealRpgGameMode.h"
 #include "UnrealRpgCharacter.h"
 
-AUnrealRpgGameMode::AUnrealRpgGameMode()
-{
+AUnrealRpgGameMode::AUnrealRpgGameMode(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer) {
 	// Set the default player pawn
 	// Failsafe
 	DefaultPawnClass = AUnrealRpgPlayerCharacter::StaticClass();
@@ -21,4 +21,5 @@ AUnrealRpgGameMode::AUnrealRpgGameMode()
 	if (PlayerControllerBpClass.Class != NULL) {
 		PlayerControllerClass = PlayerControllerBpClass.Class;
 	}
+	HUDClass = AUnrealRpgHUD::StaticClass();
 }

@@ -6,7 +6,8 @@
 
 
 
-AUnrealRpgPlayerCameraManager::AUnrealRpgPlayerCameraManager() {
+AUnrealRpgPlayerCameraManager::AUnrealRpgPlayerCameraManager(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer) {
 	eDefaultCameraMode = ECameraMode::OverShoulder;
 	fixedCamera = false;
 	//eCurrentCameraMode = eDefaultCameraMode;

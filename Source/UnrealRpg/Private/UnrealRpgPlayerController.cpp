@@ -5,7 +5,8 @@
 
 
 // Constructor
-AUnrealRpgPlayerController::AUnrealRpgPlayerController() {
+AUnrealRpgPlayerController::AUnrealRpgPlayerController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer) {
 	/* Sets the player camera manager
 	* @param fail safe assigns the player camera manager to the c++ template
 	* @param attempts to find blueprint based off of c++ template and assign it as the camera manager
