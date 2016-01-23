@@ -8,13 +8,16 @@
 /**
  * 
  */
+
 UCLASS()
 class UNREALRPG_API UUnrealRpgGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
+private:
+	
 public:
 	UUnrealRpgGameInstance(const FObjectInitializer& ObjectInitializer);
-	
-	
+	FStreamableManager* AssetLoader;
+	//UObject* LoadAsset(FString aPath, bool bUseSynchronous = false);
 	
 };
