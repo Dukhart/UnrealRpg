@@ -18,17 +18,23 @@ public:
 	virtual void DrawHUD() override;
 public:
 	// HUD TEXTURE elements
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = HUDTextures)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HUDTextures)
 		TAssetPtr<UTexture2D> CrosshiarTexture;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Statusbars)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Statusbars)
 		TAssetPtr<UTexture2D> HealthBarTexture;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Statusbars)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Statusbars)
 		TAssetPtr<UTexture2D> StaminaBarTexture;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Statusbars)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Statusbars)
 		TAssetPtr<UTexture2D> ManaBarTexture;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Statusbars)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Statusbars)
 		TAssetPtr<UTexture2D> StatusBarBackgroundTexture;
 
+	
+	// load texture 2D methods
+	UTexture2D* LoadTexture2D(FString tPath);
+	TArray<UTexture2D*> LoadMultipleTexture2D(TArray<FString> tPaths);
+
+	bool LoadTexture2DPtr(TAssetPtr<UTexture2D> asset);
 	// Change texture request methods
 	bool ChangeCrosshair(int32 ID);
 	bool ChangeCrosshair(FString ID);
@@ -40,16 +46,11 @@ public:
 	bool ChangeManaBar(FString ID);
 	bool ChangeStatusBarBackground(int32 ID);
 	bool ChangeStatusBarBackground(FString ID);
-
 private:
+	// DELEGATES for load texture request completion
+	//void DoAsyncLoadTexture2D(FString tPath);
+	//void DoLoadMultipleTexture2D(TArray<FString> tPaths);
 	// DELEGATES for Change texture request completion
+	void DoLoadTexture2DPtr(TAssetPtr<UTexture2D> asset);
 	void DoAsyncChangeCrosshair();
-	
-	bool loadingBasicTextures;
-	void LoadBasicPlayerHUDTextures(TArray<FString> tPaths);
-	void FinishedLoadBasicPlayerHUDTextures(FString name);
-
-	bool LoadTexture2D(FString tPath);
-	void DoAsyncLoadTexture2D(FString tPath);
-
 };

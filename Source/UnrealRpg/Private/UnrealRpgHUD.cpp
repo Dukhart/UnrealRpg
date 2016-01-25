@@ -10,9 +10,83 @@
 
 AUnrealRpgHUD::AUnrealRpgHUD(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
-	//loadingBasicTextures = false;
 	//static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshiarTextureObj(*FURLs::DefaultCrosshiarTexture);
 	//CrosshiarText = CrosshiarTextureObj.Object;
+}
+
+UTexture2D* AUnrealRpgHUD::LoadTexture2D(FString tPath) {
+	UTexture2D* newTexture = new UTexture2D();
+	FStringAssetReference ref(tPath);
+	UUnrealRpgGameInstance* UGI = Cast<UUnrealRpgGameInstance>(GetGameInstance());
+	// check that we succesfully grabbed the game instance
+	if (UGI) {
+		//UGI->AssetLoader->RequestAsyncLoad(ref, FStreamableDelegate::CreateUObject(this, &AUnrealRpgHUD::DoAsyncLoadTexture2D, tPath));
+		newTexture = Cast<UTexture2D>(UGI->AssetLoader->SynchronousLoad(ref));
+		return newTexture;
+	}
+	else {
+		UE_LOG(DebugLog, Error, TEXT("Load Texture failed to find game instance"));
+		// the UGI should ALWAYS exist so this should never get called
+		checkNoEntry();
+	}
+	return newTexture;
+}
+TArray<UTexture2D*> AUnrealRpgHUD::LoadMultipleTexture2D(TArray<FString> tPaths) {
+	// create an array to hold the textures
+	TArray<UTexture2D*> newTextures;
+	// create the asset refrence variable to be used to temporarly hold the asset paths in a format the asset loader understands
+	FStringAssetReference ref;
+	// get the game instance as it has the global asset loader
+	UUnrealRpgGameInstance* UGI = Cast<UUnrealRpgGameInstance>(GetGameInstance());
+	if (UGI) {
+		for (int32 i = 0; i < tPaths.Num(); ++i) {
+			// add the texture paths to the asset refrence
+			ref = FStringAssetReference(tPaths[i]);
+			// load the asset with the global asset loader from the UGI and add them to the texture array
+			newTextures.AddUnique(Cast<UTexture2D>(UGI->AssetLoader->SynchronousLoad(ref)));
+		}
+		// return the array after all textures have been cycled through for loading
+		return newTextures;
+	}
+	else {
+		UE_LOG(DebugLog, Error, TEXT("Load Multiple Texture failed to find game instance"));
+		// the UGI should ALWAYS exist so this should never get called
+		checkNoEntry();
+	}
+	return newTextures;
+}
+
+bool AUnrealRpgHUD::LoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
+	// make sure the imported asset can be loaded
+	if (asset.IsNull())
+	{
+		return false;
+	}
+	// get the game instance
+	UUnrealRpgGameInstance* UGI = Cast<UUnrealRpgGameInstance>(GetGameInstance());
+	// make sure we successfully grabbed the game instance
+	if (UGI) {
+		FStringAssetReference ref(asset.ToStringReference());
+		UGI->AssetLoader->RequestAsyncLoad(ref, FStreamableDelegate::CreateUObject(this, &AUnrealRpgHUD::DoLoadTexture2DPtr, asset));
+		return true;
+	}
+	else {
+		UE_LOG(DebugLog, Error, TEXT("LoadTexture2DPtr failed to find game instance"))
+		checkNoEntry();
+	}
+	return false;
+}
+void AUnrealRpgHUD::DoLoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
+
+}
+void AUnrealRpgHUD::DrawHUD() {
+	Super::DrawHUD();
+	// Get players current camera mode
+	ECameraMode eCurrentCameraMode = Cast<AUnrealRpgPlayerCameraManager>(GetOwningPlayerController()->PlayerCameraManager)->GetCameraMode();
+	// Find the center of the canvas
+	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
+	// create a variable to hold object draw positions
+	FVector2D DrawPosition;
 }
 //Change Texture Requests
 // Changes the Crosshair to a new one based on the number assigned to the crosshair image
@@ -55,64 +129,7 @@ bool AUnrealRpgHUD::ChangeStatusBarBackground(int32 ID) {
 bool AUnrealRpgHUD::ChangeStatusBarBackground(FString ID) {
 	return false;
 }
-
-bool AUnrealRpgHUD::LoadTexture2D(FString tPath) {
-	return false;
-}
 // DELEGATES for Change texture request completion
-void AUnrealRpgHUD::DoAsyncLoadTexture2D(FString path) {
-
-}
 void AUnrealRpgHUD::DoAsyncChangeCrosshair() {
 
-}
-
-
-// will handle loading texture2D assets at runtime so we don't have to load them all at the same time in the header
-void AUnrealRpgHUD::LoadBasicPlayerHUDTextures(TArray<FString> tPaths) {
-	//FStreamableManager* stream = new FStreamableManager;
-	TArray<FStringAssetReference> refs;
-
-	FString name("asd");
-
-	UUnrealRpgGameInstance* UGI = Cast<UUnrealRpgGameInstance>(GetGameInstance());
-	if (UGI) {
-		for (int32 i = 0; i < tPaths.Num(); ++i) {
-			// using add unique instead of just add since it would be pointless to load the same texture twice
-			// shouldn't really have much effect but will prevent slow down from user error inputing the same texture multiple times
-			refs.AddUnique(tPaths[i]);
-		}
-		UGI->AssetLoader->RequestAsyncLoad(refs, FStreamableDelegate::CreateUObject(this, &AUnrealRpgHUD::FinishedLoadBasicPlayerHUDTextures, name));
-	}
-	else {
-		return;
-	}
-	//Get a refrence to the object based on th input string
-	
-	//Load the object through the StreamableManager and cast it to a Texture2D as it will return a UObject
-	//return Cast<UTexture2D>(stream->SynchronousLoad(ref));
-}
-void AUnrealRpgHUD::FinishedLoadBasicPlayerHUDTextures(FString name) {
-	UE_LOG(DebugLog, Warning, TEXT(" %s "), *name);
-}
-
-void AUnrealRpgHUD::DrawHUD() {
-	Super::DrawHUD();
-	// Get players current camera mode
-	ECameraMode eCurrentCameraMode = Cast<AUnrealRpgPlayerCameraManager>(GetOwningPlayerController()->PlayerCameraManager)->GetCameraMode();
-	// Find the center of the canvas
-	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
-	// create a variable to hold object draw positions
-	FVector2D DrawPosition;
-	// Current camera mode may effect some HUD elements draw position
-	switch (eCurrentCameraMode)
-	{
-	case ECameraMode::FirstPerson:
-		// Draw the crosshiar in the center of the screen
-		//DrawPosition.X = Center.X - (CrosshiarText->GetSurfaceWidth() * 0.5f);
-		//DrawPosition.Y = Center.Y - (CrosshiarText->GetSurfaceHeight() * 0.5f);
-		break;
-	default:
-		break;
-	}
 }
