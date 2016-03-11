@@ -7,40 +7,40 @@
 
 
 
-AUnrealRpgPlayerCameraManager::AUnrealRpgPlayerCameraManager(const FObjectInitializer& ObjectInitializer)
+AURpg_PlayerCameraManager::AURpg_PlayerCameraManager(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 	eDefaultCameraMode = ECameraMode::OverShoulder;
 	fixedCamera = false;
 	//eCurrentCameraMode = eDefaultCameraMode;
 }
-void AUnrealRpgPlayerCameraManager::BeginPlay() {
+void AURpg_PlayerCameraManager::BeginPlay() {
 	Super::BeginPlay();
 	eCurrentCameraMode = eDefaultCameraMode;
 	switch (eCurrentCameraMode) {
 	case ECameraMode::FirstPerson:
-		Cast<AUnrealRpgPlayerController>(GetOwningPlayerController())->ActivateFirstPersonCamera();
+		Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateFirstPersonCamera();
 		break;
 	case ECameraMode::OverShoulder:
-		Cast<AUnrealRpgPlayerController>(GetOwningPlayerController())->ActivateOverShoulderCamera();
+		Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateOverShoulderCamera();
 		break;
 	case ECameraMode::FreeRange:
-		Cast<AUnrealRpgPlayerController>(GetOwningPlayerController())->ActivateFreeRangeCamera();
+		Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateFreeRangeCamera();
 		break;
 	case ECameraMode::SkyViewCamera:
-		Cast<AUnrealRpgPlayerController>(GetOwningPlayerController())->ActivateSkyViewCamera();
+		Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateSkyViewCamera();
 		break;
 	case ECameraMode::FreeCamera:
-		Cast<AUnrealRpgPlayerController>(GetOwningPlayerController())->ActivateFreeCamera();
+		Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateFreeCamera();
 		break;
 	default:
 		break;
 	}
-	Cast<AUnrealRpgPlayerController>(GetOwningPlayerController())->ActivateFreeRangeCamera();
+	Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateFreeRangeCamera();
 }
 // Get and Set functions for eCurrentCameraMode 
-void AUnrealRpgPlayerCameraManager::SetCameraMode(ECameraMode newCameraMode) {
+void AURpg_PlayerCameraManager::SetCameraMode(ECameraMode newCameraMode) {
 	eCurrentCameraMode = newCameraMode;
 }
-ECameraMode AUnrealRpgPlayerCameraManager::GetCameraMode() {
+ECameraMode AURpg_PlayerCameraManager::GetCameraMode() {
 	return eCurrentCameraMode;
 }

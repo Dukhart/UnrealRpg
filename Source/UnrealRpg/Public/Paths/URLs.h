@@ -6,16 +6,14 @@
  * 
  */
 USTRUCT()
-struct UNREALRPG_API FURLs
+struct UNREALRPG_API FURpg_BpAsset_Paths
 {
 	GENERATED_USTRUCT_BODY()
 public:
 	// Default Player assets
 	static const FString DefaultPlayerCharacterBP;
-	static const FString DefaultPlayerCharacterMesh;
 	static const FString DefualtPlayerAnimationBP;
 	static const FString DefaultPlayerControllerBp;
 	static const FString DefaultPlayerCameraManagerBp;
-	// Default HUD assets
-	static const FString DefaultCrosshiarTexture;
+	static const FString DefaultHUD;
 };

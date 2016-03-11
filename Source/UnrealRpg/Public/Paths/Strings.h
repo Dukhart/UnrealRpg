@@ -6,9 +6,10 @@
  * 
  */
 USTRUCT()
-struct UNREALRPG_API FStrings
+struct UNREALRPG_API FURpg_MeshAsset_Paths
 {
 	GENERATED_USTRUCT_BODY()
 public:
-
+	// player meshes
+	static const FString DefaultPlayerCharacterMesh;
 };

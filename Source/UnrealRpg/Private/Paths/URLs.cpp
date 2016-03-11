@@ -5,10 +5,8 @@
 
 
 // Default Player Assets
-const FString FURLs::DefaultPlayerCharacterBP = FString("APlayerCharacter'/Game/Blueprints/Characters/Player/Human/Male/BasicMale/PlayerCharacterBasicMaleBP.PlayerCharacterBasicMaleBP_C'");
-const FString FURLs::DefaultPlayerCharacterMesh = FString("SkeletalMesh'/Game/Characters/Humanoid/Human/Male/BasicMale.BasicMale'");
-const FString FURLs::DefualtPlayerAnimationBP = FString("AnimBlueprint'/Game/Blueprints/Animation/Humaniod/Male/BasicMale/BasicMale_AnimBP.BasicMale_AnimBP_C'");
-const FString FURLs::DefaultPlayerControllerBp = FString("AUnrealRpgPlayerController'/Game/Blueprints/GameLogic/Player/UnrealRpgPlayerControllerBp.UnrealRpgPlayerControllerBp_C'");
-const FString FURLs::DefaultPlayerCameraManagerBp = FString("AUnrealRpgPlayerCameraManager'/Game/Blueprints/GameLogic/Player/UnrealRpgPlayerCameraManagerBp.UnrealRpgPlayerCameraManagerBp_C'");
-// Default HUD assets
-const FString FURLs::DefaultCrosshiarTexture = FString("Texture2D'/Game/Textures/HUD/FirstPersonCrosshair.FirstPersonCrosshair'");
+const FString FURpg_BpAsset_Paths::DefaultPlayerCharacterBP = FString("APlayerCharacter'/Game/Blueprints/Player/URpg_PlayerCharacter_Bp.URpg_PlayerCharacter_Bp_C'");
+const FString FURpg_BpAsset_Paths::DefualtPlayerAnimationBP = FString("AnimBlueprint'/Game/Blueprints/Animation/Humaniod/Male/BasicMale/BasicMale_AnimBP.BasicMale_AnimBP_C'");
+const FString FURpg_BpAsset_Paths::DefaultPlayerControllerBp = FString("APlayerController'/Game/Blueprints/Player/URpg_PlayerController_Bp.URpg_PlayerController_Bp_C'");
+const FString FURpg_BpAsset_Paths::DefaultPlayerCameraManagerBp = FString("APlayerCameraManager'/Game/Blueprints/Player/URpg_PlayerCameraManager_Bp.URpg_PlayerCameraManager_Bp_C'");
+const FString FURpg_BpAsset_Paths::DefaultHUD = FString("AHUD'/Game/Blueprints/Player/URpg_HUD_Bp.URpg_HUD_Bp'");

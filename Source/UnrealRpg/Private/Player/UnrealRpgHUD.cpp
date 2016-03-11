@@ -12,16 +12,16 @@
 
 
 
-AUnrealRpgHUD::AUnrealRpgHUD(const FObjectInitializer& ObjectInitializer)
+AURpg_HUD::AURpg_HUD(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 	//static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshiarTextureObj(*FURLs::DefaultCrosshiarTexture);
 	//CrosshiarText = CrosshiarTextureObj.Object;
 }
 
-UTexture2D* AUnrealRpgHUD::LoadTexture2D(FString tPath) {
+UTexture2D* AURpg_HUD::LoadTexture2D(FString tPath) {
 	UTexture2D* newTexture = new UTexture2D();
 	FStringAssetReference ref(tPath);
-	UUnrealRpgGameInstance* UGI = Cast<UUnrealRpgGameInstance>(GetGameInstance());
+	UURpg_GameInstance* UGI = Cast<UURpg_GameInstance>(GetGameInstance());
 	// check that we succesfully grabbed the game instance
 	if (UGI) {
 		//UGI->AssetLoader->RequestAsyncLoad(ref, FStreamableDelegate::CreateUObject(this, &AUnrealRpgHUD::DoAsyncLoadTexture2D, tPath));
@@ -35,13 +35,13 @@ UTexture2D* AUnrealRpgHUD::LoadTexture2D(FString tPath) {
 	}
 	return newTexture;
 }
-TArray<UTexture2D*> AUnrealRpgHUD::LoadMultipleTexture2D(TArray<FString> tPaths) {
+TArray<UTexture2D*> AURpg_HUD::LoadMultipleTexture2D(TArray<FString> tPaths) {
 	// create an array to hold the textures
 	TArray<UTexture2D*> newTextures;
 	// create the asset refrence variable to be used to temporarly hold the asset paths in a format the asset loader understands
 	FStringAssetReference ref;
 	// get the game instance as it has the global asset loader
-	UUnrealRpgGameInstance* UGI = Cast<UUnrealRpgGameInstance>(GetGameInstance());
+	UURpg_GameInstance* UGI = Cast<UURpg_GameInstance>(GetGameInstance());
 	if (UGI) {
 		for (int32 i = 0; i < tPaths.Num(); ++i) {
 			// add the texture paths to the asset refrence
@@ -60,18 +60,18 @@ TArray<UTexture2D*> AUnrealRpgHUD::LoadMultipleTexture2D(TArray<FString> tPaths)
 	return newTextures;
 }
 
-bool AUnrealRpgHUD::LoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
+bool AURpg_HUD::LoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
 	// make sure the imported asset can be loaded
 	if (asset.IsNull())
 	{
 		return false;
 	}
 	// get the game instance
-	UUnrealRpgGameInstance* UGI = Cast<UUnrealRpgGameInstance>(GetGameInstance());
+	UURpg_GameInstance* UGI = Cast<UURpg_GameInstance>(GetGameInstance());
 	// make sure we successfully grabbed the game instance
 	if (UGI) {
 		FStringAssetReference ref(asset.ToStringReference());
-		UGI->AssetLoader->RequestAsyncLoad(ref, FStreamableDelegate::CreateUObject(this, &AUnrealRpgHUD::DoLoadTexture2DPtr, asset));
+		UGI->AssetLoader->RequestAsyncLoad(ref, FStreamableDelegate::CreateUObject(this, &AURpg_HUD::DoLoadTexture2DPtr, asset));
 		return true;
 	}
 	else {
@@ -80,13 +80,13 @@ bool AUnrealRpgHUD::LoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
 	}
 	return false;
 }
-void AUnrealRpgHUD::DoLoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
+void AURpg_HUD::DoLoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
 
 }
-void AUnrealRpgHUD::DrawHUD() {
+void AURpg_HUD::DrawHUD() {
 	Super::DrawHUD();
 	// Get players current camera mode
-	ECameraMode eCurrentCameraMode = Cast<AUnrealRpgPlayerCameraManager>(GetOwningPlayerController()->PlayerCameraManager)->GetCameraMode();
+	ECameraMode eCurrentCameraMode = Cast<AURpg_PlayerCameraManager>(GetOwningPlayerController()->PlayerCameraManager)->GetCameraMode();
 	// Find the center of the canvas
 	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
 	// create a variable to hold object draw positions
@@ -94,46 +94,46 @@ void AUnrealRpgHUD::DrawHUD() {
 }
 //Change Texture Requests
 // Changes the Crosshair to a new one based on the number assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeCrosshair(int32 ID) {
+bool AURpg_HUD::ChangeCrosshair(int32 ID) {
 	return false;
 }
 // Changes the Crosshair to a new one based on the name assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeCrosshair(FString ID) {
+bool AURpg_HUD::ChangeCrosshair(FString ID) {
 	return false;
 }
 // Changes the HealthBar to a new one based on the number assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeHealthBar(int32 ID) {
+bool AURpg_HUD::ChangeHealthBar(int32 ID) {
 	return false;
 }
 // Changes the HealthBar to a new one based on the name assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeHealthBar(FString ID) {
+bool AURpg_HUD::ChangeHealthBar(FString ID) {
 	return false;
 }
 // Changes the StaminaBar to a new one based on the number assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeStaminaBar(int32 ID) {
+bool AURpg_HUD::ChangeStaminaBar(int32 ID) {
 	return false;
 }
 // Changes the StaminaBar to a new one based on the name assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeStaminaBar(FString ID) {
+bool AURpg_HUD::ChangeStaminaBar(FString ID) {
 	return false;
 }
 // Changes the ManaBar to a new one based on the number assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeManaBar(int32 ID) {
+bool AURpg_HUD::ChangeManaBar(int32 ID) {
 	return false;
 }
 // Changes the ManaBar to a new one based on the name assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeManaBar(FString ID) {
+bool AURpg_HUD::ChangeManaBar(FString ID) {
 	return false;
 }
 // Changes the StatusBar Background to a new one based on the number assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeStatusBarBackground(int32 ID) {
+bool AURpg_HUD::ChangeStatusBarBackground(int32 ID) {
 	return false;
 }
 // Changes the StatusBarBackground to a new one based on the name assigned to the crosshair image
-bool AUnrealRpgHUD::ChangeStatusBarBackground(FString ID) {
+bool AURpg_HUD::ChangeStatusBarBackground(FString ID) {
 	return false;
 }
 // DELEGATES for Change texture request completion
-void AUnrealRpgHUD::DoAsyncChangeCrosshair() {
+void AURpg_HUD::DoAsyncChangeCrosshair() {
 
 }

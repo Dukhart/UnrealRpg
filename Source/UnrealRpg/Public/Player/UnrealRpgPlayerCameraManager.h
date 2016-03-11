@@ -18,12 +18,12 @@ enum class ECameraMode : uint8
 };
 
 UCLASS()
-class UNREALRPG_API AUnrealRpgPlayerCameraManager : public APlayerCameraManager
+class UNREALRPG_API AURpg_PlayerCameraManager : public APlayerCameraManager
 {
 	GENERATED_BODY()
 	
 public:
-	AUnrealRpgPlayerCameraManager(const FObjectInitializer& ObjectInitializer);
+	AURpg_PlayerCameraManager(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	bool fixedCamera;
 	virtual void SetCameraMode(ECameraMode newCameraMode);
 	UFUNCTION(BlueprintCallable, Category = CameraSettings)

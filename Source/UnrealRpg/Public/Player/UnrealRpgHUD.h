@@ -9,11 +9,11 @@
  * 
  */
 UCLASS()
-class UNREALRPG_API AUnrealRpgHUD : public AHUD
+class UNREALRPG_API AURpg_HUD : public AHUD
 {
 	GENERATED_BODY()
 public:
-	AUnrealRpgHUD(const FObjectInitializer& ObjectInitializer);
+	AURpg_HUD(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	/** Primary draw call for the HUD */
 	virtual void DrawHUD() override;
 public:

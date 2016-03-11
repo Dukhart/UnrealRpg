@@ -4,12 +4,12 @@
 #include "UnrealRpgGameMode.generated.h"
 
 UCLASS(minimalapi)
-class AUnrealRpgGameMode : public AGameMode
+class AURpg_GameMode : public AGameMode
 {
 	GENERATED_BODY()
 
 public:
-	AUnrealRpgGameMode(const FObjectInitializer& ObjectInitializer);
+	AURpg_GameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 };
 
 

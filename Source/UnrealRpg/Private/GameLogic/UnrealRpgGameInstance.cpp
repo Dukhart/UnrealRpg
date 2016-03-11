@@ -6,7 +6,7 @@
 
 
 
-UUnrealRpgGameInstance::UUnrealRpgGameInstance(const FObjectInitializer& ObjectInitializer)
+UURpg_GameInstance::UURpg_GameInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 	AssetLoader = new FStreamableManager;
 }

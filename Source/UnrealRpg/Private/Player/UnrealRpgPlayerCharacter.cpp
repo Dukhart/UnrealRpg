@@ -7,12 +7,12 @@
 
 
 
-AUnrealRpgPlayerCharacter::AUnrealRpgPlayerCharacter(const FObjectInitializer& ObjectInitializer)
+AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 	// get the refrence to our character Mesh asset
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshObj(*FURLs::DefaultPlayerCharacterMesh);
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshObj(*FURpg_MeshAsset_Paths::DefaultPlayerCharacterMesh);
 	// get the refrence to our character animation asset
-	static ConstructorHelpers::FObjectFinder<UAnimBlueprintGeneratedClass> AnimBp(*FURLs::DefualtPlayerAnimationBP);
+	static ConstructorHelpers::FObjectFinder<UAnimBlueprintGeneratedClass> AnimBp(*FURpg_BpAsset_Paths::DefualtPlayerAnimationBP);
 	if (MeshObj.Object && GetMesh() != NULL) {
 		// Set the new Mesh
 		GetMesh()->SetSkeletalMesh(MeshObj.Object);
@@ -46,7 +46,7 @@ AUnrealRpgPlayerCharacter::AUnrealRpgPlayerCharacter(const FObjectInitializer& O
 		//GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 }
-void AUnrealRpgPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
+void AURpg_PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	// Set up gameplay key bindings
 	check(InputComponent);
@@ -70,6 +70,6 @@ void AUnrealRpgPlayerCharacter::SetupPlayerInputComponent(class UInputComponent*
 	InputComponent->BindTouch(IE_Released, this, &AUnrealRpgCharacter::TouchStopped);
 	*/
 }
-void AUnrealRpgPlayerCharacter::BeginPlay() {
+void AURpg_PlayerCharacter::BeginPlay() {
 	Super::BeginPlay();
 }

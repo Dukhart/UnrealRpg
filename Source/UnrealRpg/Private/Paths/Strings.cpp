@@ -3,4 +3,5 @@
 #include "UnrealRpg.h"
 #include "Strings.h"
 
-
+// player meshes
+const FString FURpg_MeshAsset_Paths::DefaultPlayerCharacterMesh = FString("SkeletalMesh'/Game/Characters/Humanoid/Human/Male/BasicMale.BasicMale'");

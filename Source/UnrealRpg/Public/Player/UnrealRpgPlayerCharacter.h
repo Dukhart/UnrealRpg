@@ -9,7 +9,7 @@
  * 
  */
 UCLASS()
-class UNREALRPG_API AUnrealRpgPlayerCharacter : public ACharacter
+class UNREALRPG_API AURpg_PlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -20,7 +20,7 @@ class UNREALRPG_API AUnrealRpgPlayerCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
 public:
-	AUnrealRpgPlayerCharacter(const FObjectInitializer& ObjectInitializer);
+	AURpg_PlayerCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
