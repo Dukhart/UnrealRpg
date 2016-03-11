@@ -1,7 +1,8 @@
-// Copyright Jordan Duncan 2015 \\
+// Copyright Jordan Duncan 2015 \\ Description=RPG Template
+
 
 #include "UnrealRpg.h"
-#include "UnrealRpgPlayerCharacter.h"
+#include "URpg_PlayerCharacter.h"
 
 
 
@@ -46,30 +47,32 @@ AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectIni
 		//GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 }
+/*
 void AURpg_PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
+
 	// Set up gameplay key bindings
 	check(InputComponent);
-	/*
-	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	//InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	//InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	InputComponent->BindAxis("MoveForward", this, &AUnrealRpgCharacter::MoveForward);
-	InputComponent->BindAxis("MoveRight", this, &AUnrealRpgCharacter::MoveRight);
+	//InputComponent->BindAxis("MoveForward", this, &AUnrealRpgCharacter::MoveForward);
+//	InputComponent->BindAxis("MoveRight", this, &AUnrealRpgCharacter::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	InputComponent->BindAxis("TurnRate", this, &AUnrealRpgCharacter::TurnAtRate);
-	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	InputComponent->BindAxis("LookUpRate", this, &AUnrealRpgCharacter::LookUpAtRate);
+//	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+//	InputComponent->BindAxis("TurnRate", this, &AUnrealRpgCharacter::TurnAtRate);
+//	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+//	InputComponent->BindAxis("LookUpRate", this, &AUnrealRpgCharacter::LookUpAtRate);
 
 	// handle touch devices
-	InputComponent->BindTouch(IE_Pressed, this, &AUnrealRpgCharacter::TouchStarted);
-	InputComponent->BindTouch(IE_Released, this, &AUnrealRpgCharacter::TouchStopped);
-	*/
+//	InputComponent->BindTouch(IE_Pressed, this, &AUnrealRpgCharacter::TouchStarted);
+//	InputComponent->BindTouch(IE_Released, this, &AUnrealRpgCharacter::TouchStopped);
+	
 }
+*/
 void AURpg_PlayerCharacter::BeginPlay() {
 	Super::BeginPlay();
 }

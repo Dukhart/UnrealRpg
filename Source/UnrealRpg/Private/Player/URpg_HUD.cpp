@@ -1,13 +1,13 @@
 // Copyright Jordan Duncan 2015 \\ Description=RPG Template
 
 #include "UnrealRpg.h"
-#include "UnrealRpgHUD.h"
+#include "URpg_HUD.h"
 #include "Engine/Canvas.h"
 #include "TextureResource.h"
 #include "CanvasItem.h"
 //includes for our custom classess
-#include "UnrealRpgPlayerCharacter.h"
-#include "UnrealRpgPlayerCameraManager.h"
+#include "URpg_PlayerCharacter.h"
+#include "URpg_PlayerCameraManager.h"
 
 
 

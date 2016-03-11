@@ -1,9 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jordan Duncan 2015 \\ Description=RPG Template
 
 #include "UnrealRpg.h"
-#include "UnrealRpgPlayerCameraManager.h"
+#include "URpg_PlayerCameraManager.h"
 // includes for custom classes
-#include "UnrealRpgPlayerController.h"
+#include "URpg_PlayerController.h"
 
 
 
@@ -13,6 +13,7 @@ AURpg_PlayerCameraManager::AURpg_PlayerCameraManager(const FObjectInitializer& O
 	fixedCamera = false;
 	//eCurrentCameraMode = eDefaultCameraMode;
 }
+
 void AURpg_PlayerCameraManager::BeginPlay() {
 	Super::BeginPlay();
 	eCurrentCameraMode = eDefaultCameraMode;

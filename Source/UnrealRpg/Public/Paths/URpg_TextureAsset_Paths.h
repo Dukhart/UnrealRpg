@@ -4,9 +4,7 @@
 
 #include "URpg_TextureAsset_Paths.generated.h"
 
-/**
- * 
- */
+
 USTRUCT()
 struct UNREALRPG_API FURpg_TextureAsset_Paths
 {
@@ -15,5 +13,5 @@ struct UNREALRPG_API FURpg_TextureAsset_Paths
 public:
 		// Default HUD assets
 		static const FString DefaultCrosshiarTexture;
-	
+
 };

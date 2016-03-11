@@ -3,11 +3,8 @@
 #pragma once
 
 #include "Engine/GameInstance.h"
-#include "UnrealRpgGameInstance.generated.h"
+#include "URpg_GameInstance.generated.h"
 
-/**
- * 
- */
 
 UCLASS()
 class UNREALRPG_API UURpg_GameInstance : public UGameInstance
@@ -17,7 +14,9 @@ private:
 	
 public:
 	UURpg_GameInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
 	FStreamableManager* AssetLoader;
 	//UObject* LoadAsset(FString aPath, bool bUseSynchronous = false);
-	
+
 };
+

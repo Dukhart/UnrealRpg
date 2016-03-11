@@ -1,9 +1,9 @@
-// Copyright Jordan Duncan 2015 \\
+// Copyright Jordan Duncan 2015 \\ Description=RPG Template
 
 #pragma once
 
 #include "Camera/PlayerCameraManager.h"
-#include "UnrealRpgPlayerCameraManager.generated.h"
+#include "URpg_PlayerCameraManager.generated.h"
 
 // Different availible Camera modes
 UENUM(BlueprintType)
@@ -24,6 +24,7 @@ class UNREALRPG_API AURpg_PlayerCameraManager : public APlayerCameraManager
 	
 public:
 	AURpg_PlayerCameraManager(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
 	bool fixedCamera;
 	virtual void SetCameraMode(ECameraMode newCameraMode);
 	UFUNCTION(BlueprintCallable, Category = CameraSettings)

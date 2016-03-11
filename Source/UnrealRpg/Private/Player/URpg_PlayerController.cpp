@@ -1,14 +1,17 @@
-// Copyright Jordan Duncan 2015 \\
+// Copyright Jordan Duncan 2015 \\ Description=RPG Template
+
+
 
 #include "UnrealRpg.h"
-#include "UnrealRpgPlayerController.h"
+#include "URpg_PlayerController.h"
 // includes for our custom classes
-#include "UnrealRpgPlayerCharacter.h"
-#include "UnrealRpgPlayerCameraManager.h"
+#include "URpg_PlayerCharacter.h"
+#include "URpg_PlayerCameraManager.h"
 
 // Constructor
 AURpg_PlayerController::AURpg_PlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
+
 	/* Sets the player camera manager
 	* @param fail safe assigns the player camera manager to the c++ template
 	* @param attempts to find blueprint based off of c++ template and assign it as the camera manager
@@ -45,30 +48,6 @@ void AURpg_PlayerController::SetupInputComponent() {
 // activated when the controller spawns
 void AURpg_PlayerController::BeginPlay() {
 	Super::BeginPlay();
-	// set the active camera mode
-	/*
-	ECameraMode eCameraRef = Cast<AUnrealRpgPlayerCameraManager>(PlayerCameraManager)->GetCameraMode();
-	switch (eCameraRef)
-	{
-	case ECameraMode::FirstPerson:
-		ActivateFirstPersonCamera();
-		break;
-	case ECameraMode::OverShoulder:
-		ActivateOverShoulderCamera();
-		break;
-	case ECameraMode::FreeRange:
-		ActivateFreeRangeCamera();
-		break;
-	case ECameraMode::SkyViewCamera:
-		ActivateSkyViewCamera();
-		break;
-	case ECameraMode::FreeCamera:
-		ActivateFreeCamera();
-		break;
-	default:
-		break;
-	}
-	*/
 }
 // INPUT
 // Handles moving the player in a strafing manner

@@ -1,18 +1,19 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright Jordan Duncan 2015 \\ Description=RPG Template
 
 #ifndef __UNREALRPG_H__
 #define __UNREALRPG_H__
 
 #include "Engine.h"
-// custom global strings
-#include "Strings.h" // will be used for translating in game text elements between Languages
-#include "URLs.h"
+
+// custom global asset path strings
+#include "URpg_BpAsset_Paths.h"
+#include "URpg_TextureAsset_Paths.h"
+#include "URpg_MeshAsset_Paths.h"
+
 // Custom  global game logic
-//#include "UnrealRpgPlayerController.h"
-//#include "UnrealRpgPlayerCharacter.h"
-//#include "UnrealRpgPlayerCameraManager.h"
-//#include "UnrealRpgHUD.h"
-#include "UnrealRpgGameInstance.h"
+#include "URpg_GameInstance.h"
+
+// LOGS
 //General Log
 DECLARE_LOG_CATEGORY_EXTERN(GeneralLog, Log, All);
 //General debug Log

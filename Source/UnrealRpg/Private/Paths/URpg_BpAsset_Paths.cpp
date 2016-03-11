@@ -1,7 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Jordan Duncan 2015 \\ Description=RPG Template
 
 #include "UnrealRpg.h"
-#include "URLs.h"
+#include "URpg_BpAsset_Paths.h"
 
 
 // Default Player Assets

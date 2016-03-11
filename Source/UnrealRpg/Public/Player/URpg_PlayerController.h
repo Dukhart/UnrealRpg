@@ -1,19 +1,16 @@
-// Copyright Jordan Duncan 2015 \\
-
+// Copyright Jordan Duncan 2015 \\ Description=RPG Template
 #pragma once
 
 #include "GameFramework/PlayerController.h"
-#include "UnrealRpgPlayerController.generated.h"
+#include "URpg_PlayerController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class UNREALRPG_API AURpg_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
 	AURpg_PlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -45,5 +42,4 @@ public:
 	virtual void LookUpDown(float value);
 	virtual void LookRightLeftRate(float value);
 	virtual void LookRightLeft(float value);
-
 };

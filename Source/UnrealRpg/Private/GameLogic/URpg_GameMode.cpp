@@ -1,11 +1,11 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright Jordan Duncan 2015 \\ Description=RPG Template
 
 #include "UnrealRpg.h"
-#include "UnrealRpgGameMode.h"
+#include "URpg_GameMode.h"
 // includes for our custom classes
-#include "UnrealRpgPlayerCharacter.h"
-#include "UnrealRpgPlayerController.h"
-#include "UnrealRpgHUD.h"
+#include "URpg_PlayerCharacter.h"
+#include "URpg_PlayerController.h"
+#include "URpg_HUD.h"
 
 
 AURpg_GameMode::AURpg_GameMode(const FObjectInitializer& ObjectInitializer)

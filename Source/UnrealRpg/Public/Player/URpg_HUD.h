@@ -3,18 +3,16 @@
 #pragma once
 
 #include "GameFramework/HUD.h"
-#include "UnrealRpgHUD.generated.h"
+#include "URpg_HUD.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class UNREALRPG_API AURpg_HUD : public AHUD
 {
 	GENERATED_BODY()
 public:
 	AURpg_HUD(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	/** Primary draw call for the HUD */
+
+	// Primary draw call for the HUD 
 	virtual void DrawHUD() override;
 public:
 	// HUD TEXTURE elements
@@ -53,4 +51,5 @@ private:
 	// DELEGATES for Change texture request completion
 	void DoLoadTexture2DPtr(TAssetPtr<UTexture2D> asset);
 	void DoAsyncChangeCrosshair();
+
 };
