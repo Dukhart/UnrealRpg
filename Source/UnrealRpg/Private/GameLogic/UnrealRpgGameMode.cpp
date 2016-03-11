@@ -2,7 +2,11 @@
 
 #include "UnrealRpg.h"
 #include "UnrealRpgGameMode.h"
-#include "UnrealRpgCharacter.h"
+// includes for our custom classes
+#include "UnrealRpgPlayerCharacter.h"
+#include "UnrealRpgPlayerController.h"
+#include "UnrealRpgHUD.h"
+
 
 AUnrealRpgGameMode::AUnrealRpgGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

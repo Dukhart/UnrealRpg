@@ -2,7 +2,8 @@
 
 #include "UnrealRpg.h"
 #include "UnrealRpgPlayerCameraManager.h"
-
+// includes for custom classes
+#include "UnrealRpgPlayerController.h"
 
 
 

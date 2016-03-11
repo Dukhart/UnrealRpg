@@ -4,14 +4,14 @@
 #define __UNREALRPG_H__
 
 #include "Engine.h"
-// custom strings
+// custom global strings
 #include "Strings.h" // will be used for translating in game text elements between Languages
 #include "URLs.h"
-// Custom controllers
-#include "UnrealRpgPlayerController.h"
-#include "UnrealRpgPlayerCharacter.h"
-#include "UnrealRpgPlayerCameraManager.h"
-#include "UnrealRpgHUD.h"
+// Custom  global game logic
+//#include "UnrealRpgPlayerController.h"
+//#include "UnrealRpgPlayerCharacter.h"
+//#include "UnrealRpgPlayerCameraManager.h"
+//#include "UnrealRpgHUD.h"
 #include "UnrealRpgGameInstance.h"
 //General Log
 DECLARE_LOG_CATEGORY_EXTERN(GeneralLog, Log, All);

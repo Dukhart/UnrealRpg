@@ -9,7 +9,7 @@
  * 
  */
 UCLASS()
-class UNREALRPG_API AUnrealRpgPlayerCharacter : public AUnrealRpgCharacter
+class UNREALRPG_API AUnrealRpgPlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 

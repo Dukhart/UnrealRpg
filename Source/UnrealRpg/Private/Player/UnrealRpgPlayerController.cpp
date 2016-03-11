@@ -2,7 +2,9 @@
 
 #include "UnrealRpg.h"
 #include "UnrealRpgPlayerController.h"
-
+// includes for our custom classes
+#include "UnrealRpgPlayerCharacter.h"
+#include "UnrealRpgPlayerCameraManager.h"
 
 // Constructor
 AUnrealRpgPlayerController::AUnrealRpgPlayerController(const FObjectInitializer& ObjectInitializer)

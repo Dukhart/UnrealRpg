@@ -5,6 +5,10 @@
 #include "Engine/Canvas.h"
 #include "TextureResource.h"
 #include "CanvasItem.h"
+//includes for our custom classess
+#include "UnrealRpgPlayerCharacter.h"
+#include "UnrealRpgPlayerCameraManager.h"
+
 
 
 
