@@ -7,11 +7,7 @@
 		{
 			"Name": "UnrealRpg",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine",
-				"CoreUObject"
-			]
+			"LoadingPhase": "Default"
 		}
 	]
 }

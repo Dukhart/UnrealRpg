@@ -1,4 +1,4 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 using UnrealBuildTool;
 using System.Collections.Generic;
@@ -20,6 +20,6 @@ public class UnrealRpgTarget : TargetRules
 		ref List<string> OutExtraModuleNames
 		)
 	{
-		OutExtraModuleNames.Add("UnrealRpg");
+		OutExtraModuleNames.AddRange( new string[] { "UnrealRpg" } );
 	}
 }

@@ -3,13 +3,13 @@
   <Properties>
     <Property Name="TargetName" Value="UnrealRpgEditor" />
     <Property Name="Platform" Value="Win64" />
-    <Property Name="Configuration" Value="Development" />
+    <Property Name="Configuration" Value="DebugGame" />
     <Property Name="Precompile" Value="False" />
   </Properties>
   <BuildProducts>
-    <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-UnrealRpg-7123.dll" Type="DynamicLibrary" />
-    <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-UnrealRpg-7123.pdb" Type="SymbolFile" />
-    <BuildProduct Path="$(ProjectDir)\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UnrealRpg-7123.lib" Type="ImportLibrary" />
+    <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-UnrealRpg-841-Win64-DebugGame.dll" Type="DynamicLibrary" />
+    <BuildProduct Path="$(ProjectDir)\Binaries\Win64\UE4Editor-UnrealRpg-841-Win64-DebugGame.pdb" Type="SymbolFile" />
+    <BuildProduct Path="$(ProjectDir)\Intermediate\Build\Win64\UE4Editor\DebugGame\UE4Editor-UnrealRpg-841-Win64-DebugGame.lib" Type="ImportLibrary" />
   </BuildProducts>
   <RuntimeDependencies />
   <AdditionalProperties />
