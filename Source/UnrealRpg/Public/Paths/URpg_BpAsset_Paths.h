@@ -10,7 +10,7 @@ struct UNREALRPG_API FURpg_BpAsset_Paths
 {
 	GENERATED_USTRUCT_BODY()
 public:
-
+	// * PLAYER ASSETS * //
 	// Default Player assets
 	static const FString DefaultPlayerCharacterBP;
 	static const FString DefualtPlayerAnimationBP;

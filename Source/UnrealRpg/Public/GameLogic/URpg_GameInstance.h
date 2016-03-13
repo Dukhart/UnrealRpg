@@ -10,13 +10,20 @@ UCLASS()
 class UNREALRPG_API UURpg_GameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-private:
-	
-public:
+
+protected:
+	// * INTITIALIZATION * //
+	// Constructor
 	UURpg_GameInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	// * LOADING OPERATIONS * //
+private:
+	// Used to load assets at runtime
 	FStreamableManager* AssetLoader;
 	//UObject* LoadAsset(FString aPath, bool bUseSynchronous = false);
-
+public:
+	// * GETTERS and SETTERS * //
+	UFUNCTION(BlueprintCallable, Category = Loading)
+		FStreamableManager&	GetAssetLoader() { return *AssetLoader; }
 };
 

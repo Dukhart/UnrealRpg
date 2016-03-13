@@ -10,6 +10,7 @@ struct UNREALRPG_API FURpg_MeshAsset_Paths
 	GENERATED_USTRUCT_BODY()
 
 public:
+	// * PLAYER ASSETS * //
 	// player meshes
 	static const FString DefaultPlayerCharacterMesh;
 

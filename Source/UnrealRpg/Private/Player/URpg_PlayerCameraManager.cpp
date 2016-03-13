@@ -6,18 +6,24 @@
 #include "URpg_PlayerController.h"
 
 
-
+// * INTITIALIZATION * //
+// Constructor
 AURpg_PlayerCameraManager::AURpg_PlayerCameraManager(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
-	eDefaultCameraMode = ECameraMode::OverShoulder;
-	fixedCamera = false;
-	//eCurrentCameraMode = eDefaultCameraMode;
+	eDefaultCameraMode = ECameraMode::FreeRange;
+	//fixedCamera = true;
+	eCurrentCameraMode = ECameraMode::None;
 }
-
+// called after the constructor
+// world and component dependent starting behavior should go here
 void AURpg_PlayerCameraManager::BeginPlay() {
 	Super::BeginPlay();
-	eCurrentCameraMode = eDefaultCameraMode;
-	switch (eCurrentCameraMode) {
+	// activate our default camera mode
+	Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateCameraMode(eDefaultCameraMode);
+
+	//eCurrentCameraMode = eDefaultCameraMode;
+	/*
+	switch (eDefaultCameraMode) {
 	case ECameraMode::FirstPerson:
 		Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateFirstPersonCamera();
 		break;
@@ -36,12 +42,7 @@ void AURpg_PlayerCameraManager::BeginPlay() {
 	default:
 		break;
 	}
-	Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateFreeRangeCamera();
+	*/
+	//Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateFreeRangeCamera();
 }
-// Get and Set functions for eCurrentCameraMode 
-void AURpg_PlayerCameraManager::SetCameraMode(ECameraMode newCameraMode) {
-	eCurrentCameraMode = newCameraMode;
-}
-ECameraMode AURpg_PlayerCameraManager::GetCameraMode() {
-	return eCurrentCameraMode;
-}
+

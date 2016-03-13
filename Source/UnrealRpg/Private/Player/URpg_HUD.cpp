@@ -10,14 +10,29 @@
 #include "URpg_PlayerCameraManager.h"
 
 
-
-
+// * INTITIALIZATION * //
+// Constructor
 AURpg_HUD::AURpg_HUD(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 	//static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshiarTextureObj(*FURLs::DefaultCrosshiarTexture);
 	//CrosshiarText = CrosshiarTextureObj.Object;
 }
 
+// * EXECUTION * //
+// Primary draw call for the HUD 
+void AURpg_HUD::DrawHUD() {
+	Super::DrawHUD();
+	// Get players current camera mode
+	ECameraMode eCurrentCameraMode = Cast<AURpg_PlayerCameraManager>(GetOwningPlayerController()->PlayerCameraManager)->GetCameraMode();
+	// Find the center of the canvas
+	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
+	// create a variable to hold object draw positions
+	FVector2D DrawPosition;
+}
+
+// * TEXTURE LOADING * //
+// load texture2D  by string path not recomended
+// should use asset ref if possible, See LoadTexture2DPtr (TAssetPtr<UTexture2D> asset)
 UTexture2D* AURpg_HUD::LoadTexture2D(FString tPath) {
 	UTexture2D* newTexture = new UTexture2D();
 	FStringAssetReference ref(tPath);
@@ -25,7 +40,7 @@ UTexture2D* AURpg_HUD::LoadTexture2D(FString tPath) {
 	// check that we succesfully grabbed the game instance
 	if (UGI) {
 		//UGI->AssetLoader->RequestAsyncLoad(ref, FStreamableDelegate::CreateUObject(this, &AUnrealRpgHUD::DoAsyncLoadTexture2D, tPath));
-		newTexture = Cast<UTexture2D>(UGI->AssetLoader->SynchronousLoad(ref));
+		newTexture = Cast<UTexture2D>(UGI->GetAssetLoader().SynchronousLoad(ref));
 		return newTexture;
 	}
 	else {
@@ -35,6 +50,8 @@ UTexture2D* AURpg_HUD::LoadTexture2D(FString tPath) {
 	}
 	return newTexture;
 }
+// load an array of texture2Ds by string path not recomended
+//( should use asset ref if possible, See LoadTexture2DPtr )
 TArray<UTexture2D*> AURpg_HUD::LoadMultipleTexture2D(TArray<FString> tPaths) {
 	// create an array to hold the textures
 	TArray<UTexture2D*> newTextures;
@@ -47,7 +64,7 @@ TArray<UTexture2D*> AURpg_HUD::LoadMultipleTexture2D(TArray<FString> tPaths) {
 			// add the texture paths to the asset refrence
 			ref = FStringAssetReference(tPaths[i]);
 			// load the asset with the global asset loader from the UGI and add them to the texture array
-			newTextures.AddUnique(Cast<UTexture2D>(UGI->AssetLoader->SynchronousLoad(ref)));
+			newTextures.AddUnique(Cast<UTexture2D>(UGI->GetAssetLoader().SynchronousLoad(ref)));
 		}
 		// return the array after all textures have been cycled through for loading
 		return newTextures;
@@ -59,7 +76,7 @@ TArray<UTexture2D*> AURpg_HUD::LoadMultipleTexture2D(TArray<FString> tPaths) {
 	}
 	return newTextures;
 }
-
+// load a texture2d by asset refrence safer then by string
 bool AURpg_HUD::LoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
 	// make sure the imported asset can be loaded
 	if (asset.IsNull())
@@ -71,11 +88,12 @@ bool AURpg_HUD::LoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
 	// make sure we successfully grabbed the game instance
 	if (UGI) {
 		FStringAssetReference ref(asset.ToStringReference());
-		UGI->AssetLoader->RequestAsyncLoad(ref, FStreamableDelegate::CreateUObject(this, &AURpg_HUD::DoLoadTexture2DPtr, asset));
+		UGI->GetAssetLoader().RequestAsyncLoad(ref, FStreamableDelegate::CreateUObject(this, &AURpg_HUD::DoLoadTexture2DPtr, asset));
 		return true;
 	}
 	else {
 		UE_LOG(DebugLog, Error, TEXT("LoadTexture2DPtr failed to find game instance"))
+		// the UGI should ALWAYS exist so this should never get called
 		checkNoEntry();
 	}
 	return false;
@@ -83,15 +101,7 @@ bool AURpg_HUD::LoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
 void AURpg_HUD::DoLoadTexture2DPtr(TAssetPtr<UTexture2D> asset) {
 
 }
-void AURpg_HUD::DrawHUD() {
-	Super::DrawHUD();
-	// Get players current camera mode
-	ECameraMode eCurrentCameraMode = Cast<AURpg_PlayerCameraManager>(GetOwningPlayerController()->PlayerCameraManager)->GetCameraMode();
-	// Find the center of the canvas
-	const FVector2D Center(Canvas->ClipX * 0.5f, Canvas->ClipY * 0.5f);
-	// create a variable to hold object draw positions
-	FVector2D DrawPosition;
-}
+
 //Change Texture Requests
 // Changes the Crosshair to a new one based on the number assigned to the crosshair image
 bool AURpg_HUD::ChangeCrosshair(int32 ID) {

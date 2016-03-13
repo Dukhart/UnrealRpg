@@ -3,7 +3,7 @@
 #include "UnrealRpg.h"
 #include "URpg_BpAsset_Paths.h"
 
-
+// * PLAYER ASSETS * //
 // Default Player Assets
 const FString FURpg_BpAsset_Paths::DefaultPlayerCharacterBP = FString("APlayerCharacter'/Game/Blueprints/Player/URpg_PlayerCharacter_Bp.URpg_PlayerCharacter_Bp_C'");
 const FString FURpg_BpAsset_Paths::DefualtPlayerAnimationBP = FString("AnimBlueprint'/Game/Blueprints/Animation/Humaniod/Male/BasicMale/BasicMale_AnimBP.BasicMale_AnimBP_C'");

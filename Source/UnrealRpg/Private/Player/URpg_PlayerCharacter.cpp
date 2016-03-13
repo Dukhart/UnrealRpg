@@ -5,9 +5,9 @@
 #include "URpg_PlayerCharacter.h"
 
 
-
-
-
+// * INTITIALIZATION * //
+// constructor
+// add components and set default values
 AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 	// get the refrence to our character Mesh asset
@@ -32,47 +32,29 @@ AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectIni
 			GetMesh()->AnimBlueprintGeneratedClass = AnimBp.Object;
 		}
 		// Create a camera boom (pulls in towards the player if there is a collision)
-		//  Note current values are for CONSTRUCTION ONLY final values will set individualy per camera mode	see Character Controller Activate Camera mode to adjust values
+		// Note current values are for CONSTRUCTION ONLY final values will set individualy per camera mode	
+		// see Character Controller Activate Camera mode to adjust values
 		CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+		// attach the camera boom to our root
 		CameraBoom->AttachTo(RootComponent);
-		CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character.
-		CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-													// Create a follow camera
+		// The camera follows at this distance behind the character.
+		CameraBoom->TargetArmLength = 300.0f;
+		// Rotate the arm based on the controller
+		CameraBoom->bUsePawnControlRotation = true;
+		// Create a follow camera
 		PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
-		PlayerCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-		PlayerCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+		// Attach the camera to the end of the camera boom
+		PlayerCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); 
+		// Camera does not rotate relative to arm
+		PlayerCamera->bUsePawnControlRotation = false; 
 		//bUseControllerRotationPitch = false;
 		//bUseControllerRotationYaw = false;
 		//bUseControllerRotationRoll = false;
 		//GetCharacterMovement()->bOrientRotationToMovement = false;
 	}
 }
-/*
-void AURpg_PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
-{
-
-	// Set up gameplay key bindings
-	check(InputComponent);
-	//InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	//InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
-	//InputComponent->BindAxis("MoveForward", this, &AUnrealRpgCharacter::MoveForward);
-//	InputComponent->BindAxis("MoveRight", this, &AUnrealRpgCharacter::MoveRight);
-
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-//	InputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-//	InputComponent->BindAxis("TurnRate", this, &AUnrealRpgCharacter::TurnAtRate);
-//	InputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-//	InputComponent->BindAxis("LookUpRate", this, &AUnrealRpgCharacter::LookUpAtRate);
-
-	// handle touch devices
-//	InputComponent->BindTouch(IE_Pressed, this, &AUnrealRpgCharacter::TouchStarted);
-//	InputComponent->BindTouch(IE_Released, this, &AUnrealRpgCharacter::TouchStopped);
-	
-}
-*/
+// called after the constructor
+// world and component dependent starting behavior should go here
 void AURpg_PlayerCharacter::BeginPlay() {
 	Super::BeginPlay();
 }

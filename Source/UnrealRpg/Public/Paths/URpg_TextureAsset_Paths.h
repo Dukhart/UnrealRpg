@@ -11,7 +11,8 @@ struct UNREALRPG_API FURpg_TextureAsset_Paths
 	GENERATED_USTRUCT_BODY()
 	
 public:
-		// Default HUD assets
-		static const FString DefaultCrosshiarTexture;
+	// * PLAYER ASSETS * //
+	// Default HUD assets
+	static const FString DefaultCrosshiarTexture;
 
 };

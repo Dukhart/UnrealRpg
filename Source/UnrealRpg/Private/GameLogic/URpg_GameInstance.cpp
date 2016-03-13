@@ -5,11 +5,14 @@
 
 
 
-
+// * INTITIALIZATION * //
+// Constructor
 UURpg_GameInstance::UURpg_GameInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
 	AssetLoader = new FStreamableManager;
 }
+
+// * LOADING OPERATIONS * //
 /*
  UObject* UURpg_GameInstance::LoadAsset(FString aPath, bool bUseSynchronous = false) {
 	FStringAssetReference ref(aPath);

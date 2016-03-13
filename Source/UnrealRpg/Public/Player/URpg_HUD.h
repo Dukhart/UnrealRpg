@@ -9,13 +9,16 @@ UCLASS()
 class UNREALRPG_API AURpg_HUD : public AHUD
 {
 	GENERATED_BODY()
-public:
+protected:
+	// * INTITIALIZATION * //
+	// Constructor
 	AURpg_HUD(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	// * EXECUTION * //
 	// Primary draw call for the HUD 
 	virtual void DrawHUD() override;
 public:
-	// HUD TEXTURE elements
+	// * HUD TEXTURE ASSETS * //
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HUDTextures)
 		TAssetPtr<UTexture2D> CrosshiarTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Statusbars)
@@ -27,11 +30,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Statusbars)
 		TAssetPtr<UTexture2D> StatusBarBackgroundTexture;
 
-	
+	// * TEXTURE LOADING * //
 	// load texture 2D methods
 	UTexture2D* LoadTexture2D(FString tPath);
 	TArray<UTexture2D*> LoadMultipleTexture2D(TArray<FString> tPaths);
-
 	bool LoadTexture2DPtr(TAssetPtr<UTexture2D> asset);
 	// Change texture request methods
 	bool ChangeCrosshair(int32 ID);

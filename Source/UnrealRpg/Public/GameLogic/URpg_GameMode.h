@@ -8,7 +8,10 @@ UCLASS(minimalapi)
 class AURpg_GameMode : public AGameMode
 {
 	GENERATED_BODY()
-public:
+
+protected:
+	// * INTITIALIZATION * //
+	// Constructor
 	AURpg_GameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 };

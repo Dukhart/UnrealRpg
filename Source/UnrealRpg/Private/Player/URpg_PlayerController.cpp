@@ -1,13 +1,13 @@
 // Copyright Jordan Duncan 2015 \\ Description=RPG Template
 
 
-
 #include "UnrealRpg.h"
 #include "URpg_PlayerController.h"
 // includes for our custom classes
 #include "URpg_PlayerCharacter.h"
-#include "URpg_PlayerCameraManager.h"
 
+
+// * INTITIALIZATION * //
 // Constructor
 AURpg_PlayerController::AURpg_PlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
@@ -18,7 +18,7 @@ AURpg_PlayerController::AURpg_PlayerController(const FObjectInitializer& ObjectI
 	*/
 	PlayerCameraManagerClass = AURpg_PlayerCameraManager::StaticClass();
 	static ConstructorHelpers::FClassFinder<APlayerCameraManager> PlayerCameraManagerBpClass(*FURpg_BpAsset_Paths::DefaultPlayerCameraManagerBp);
-	if (PlayerCameraManagerBpClass.Class != NULL) {
+	if (PlayerCameraManagerBpClass.Class != nullptr) {
 		PlayerCameraManagerClass = PlayerCameraManagerBpClass.Class;
 	}
 	// sets the default look params
@@ -33,7 +33,7 @@ void AURpg_PlayerController::SetupInputComponent() {
 	Super::SetupInputComponent();
 	// Check that the input component was succesfully Initialized
 	check(InputComponent);
-	if (InputComponent != NULL) {
+	if (InputComponent != nullptr) {
 		// Bind player input to the appropriate functions
 		// Bind Input AXIS
 		InputComponent->BindAxis("Move_Strafe", this, &AURpg_PlayerController::MoveStrafe);
@@ -45,12 +45,14 @@ void AURpg_PlayerController::SetupInputComponent() {
 		// Bind Input BUTTONS
 	}
 }
-// activated when the controller spawns
+// Called after the constructor
+// World and component dependent starting behavior should go here
 void AURpg_PlayerController::BeginPlay() {
 	Super::BeginPlay();
 }
-// INPUT
-// Handles moving the player in a strafing manner
+
+// * INPUT * //
+// Detect Character Movement Input on the X axis (Left / Right)
 void AURpg_PlayerController::MoveStrafe(float value) {
 	ECameraMode eCurrentCameraRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->GetCameraMode();
 	if (GetPawn() != NULL && value != 0.0f)
@@ -93,10 +95,12 @@ void AURpg_PlayerController::MoveStrafe(float value) {
 	{
 		MoveValX = 0.0f;
 	}
+	GEngine->AddOnScreenDebugMessage(0, 1, FColor::Green, FString("X move = " + FString::SanitizeFloat(MoveValX)));
 }
-// Handles Forward and Back input
+
+// Detect Character Movement Input on the Y axis (Forward / Back)
 void AURpg_PlayerController::MoveForwardBack(float value) {
-	if (GetPawn() != NULL && value != 0.0f) {
+	if (GetPawn() != nullptr && value != 0.0f) {
 		FRotator RotationControlSpace;
 		FRotator YawRotation;
 		FVector Direction;
@@ -116,24 +120,29 @@ void AURpg_PlayerController::MoveForwardBack(float value) {
 			MoveValY = value;
 			break;
 		case ECameraMode::FreeRange: // Free Range camera behavior for forward back input
+			// Pawn movement
 			RotationControlSpace = GetControlRotation(); 
 			YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 			GetPawn()->AddMovementInput(Direction, value);
+
+			// Pawn Animation
 			// In free range mode when not locked on all move directions will be considered forward by the animator
 			if (value < 0.0f) {
 				value *= -1.0f;
 			}
 			MoveValY = value;
+
+			/*
 			if (Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->fixedCamera == false) {
-				FRotator pawnRot = GetPawn()->GetActorRotation();
-				FRotator cameraRotation = PlayerCameraManager->GetCameraRotation();
-				if (pawnRot != cameraRotation) {
+			FRotator pawnRot = GetPawn()->GetActorRotation();
+			FRotator cameraRotation = PlayerCameraManager->GetCameraRotation();
+			if (GetPawn()->GetActorRotation() != PlayerCameraManager->GetCameraRotation()) {
 
-
-					AddYawInput(0.0f);
-				}
+				AddYawInput(0.0f);
 			}
+			}
+			*/
 			break;
 		case ECameraMode::SkyViewCamera:
 			break;
@@ -147,10 +156,14 @@ void AURpg_PlayerController::MoveForwardBack(float value) {
 	{
 		MoveValY = 0.0f;
 	}
+	GEngine->AddOnScreenDebugMessage(0, 1, FColor::Green, FString("Y move = " + FString::SanitizeFloat(MoveValY)));
 }
+
+// Detect Jump Input
 void AURpg_PlayerController::MoveJump(float value) {
 
 }
+// Detect Camera Movement Input on the Y Axis
 void AURpg_PlayerController::LookUpDownRate(float value) {
 	if (bInvertLookYAxis) {
 		value *= -1.0f;
@@ -158,12 +171,14 @@ void AURpg_PlayerController::LookUpDownRate(float value) {
 	// calculate delta for this frame from the rate information
 	AddPitchInput(value * baseLookRate * GetWorld()->GetDeltaSeconds());
 }
+// Detect Camera Movement Input on the Y Axis
 void AURpg_PlayerController::LookUpDown(float value) {
 	if (bInvertLookYAxis) {
 		value *= -1.0f;
 	}
 	AddPitchInput(value);
 }
+// Detect Camera Movement Input on the X Axis
 void AURpg_PlayerController::LookRightLeftRate(float value) {
 	if (bInvertLookXAxis) {
 		value *= -1.0f;
@@ -171,16 +186,54 @@ void AURpg_PlayerController::LookRightLeftRate(float value) {
 	// calculate delta for this frame from the rate information
 	AddYawInput(value * baseTurnRate * GetWorld()->GetDeltaSeconds());
 }
+// Detect Camera Movement Input on the X Axis
 void AURpg_PlayerController::LookRightLeft(float value) {
 	if (bInvertLookXAxis) {
 		value *= -1.0f;
 	}
 	AddYawInput(value);
 }
-// CAMERA
-// Activates First Person Camera
+// * CAMERA * //
+// Switch between Controller/Camera styles
+void AURpg_PlayerController::ActivateCameraMode(ECameraMode newCameraMode) {
+	AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
+	// if the new camera mode is the same as our new camera mode return
+	if (camManRef == nullptr || newCameraMode == camManRef->GetCameraMode()) {
+		return;
+	}
+	switch (newCameraMode) {
+	case ECameraMode::FirstPerson:
+		ActivateFirstPersonCamera();
+		break;
+	case ECameraMode::OverShoulder:
+		ActivateOverShoulderCamera();
+		break;
+	case ECameraMode::FreeRange:
+		ActivateFreeRangeCamera();
+		break;
+	case ECameraMode::SkyViewCamera:
+		ActivateSkyViewCamera();
+		break;
+	case ECameraMode::FreeCamera:
+		ActivateFreeCamera();
+		break;
+	default:
+#if !UE_BUILD_SHIPPING
+		UE_LOG(GeneralLog, Warning, TEXT("Invalid Camera mode input: Activating backup FreeRangeMode"))
+#endif // !UE_BUILD_SHIPPING
+			ActivateFreeRangeCamera();
+		break;
+	}
+	camManRef->SetCameraMode(newCameraMode);
+}
+
+// Activates First Person Camera Mode
 void AURpg_PlayerController::ActivateFirstPersonCamera() {
-	UE_LOG(InitLog, Warning, TEXT("ACTIVATING FirstPerson CameraMode"));
+
+#if !UE_BUILD_SHIPPING
+	UE_LOG(InitLog, Log, TEXT("ACTIVATING FirstPerson CameraMode"));
+#endif // !UE_BUILD_SHIPPING
+
 	Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FirstPerson);
 	if (GetCharacter() != NULL) {
 		// get a refrence to the player character
@@ -188,7 +241,11 @@ void AURpg_PlayerController::ActivateFirstPersonCamera() {
 		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) != characterRef->GetCameraBoom()) {
 			// remove the camera from current parent
 			characterRef->GetPlayerCamera()->DetachFromParent();
-			UE_LOG(DebugLog, Warning, TEXT("attaching Cam to player pawn's Camera boom"));
+
+#if !UE_BUILD_SHIPPING
+			UE_LOG(DebugLog, Log, TEXT("ATTACHING Camera to player pawn's Camera boom"));
+#endif // !UE_BUILD_SHIPPING
+
 			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetCameraBoom(), USpringArmComponent::SocketName);
 		}
 		//characterRef->GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -197,9 +254,14 @@ void AURpg_PlayerController::ActivateFirstPersonCamera() {
 		//characterRef->bUseControllerRotationRoll = false;
 	}
 }
-// Activates Over the Shoulder Camera
+
+// Activates Over the Shoulder Camera Mode
 void AURpg_PlayerController::ActivateOverShoulderCamera() {
-	UE_LOG(InitLog, Warning, TEXT("ACTIVATING OverTheShoulder CameraMode"));
+
+#if !UE_BUILD_SHIPPING
+	UE_LOG(InitLog, Log, TEXT("ACTIVATING OverTheShoulder CameraMode"));
+#endif // !UE_BUILD_SHIPPING
+
 	Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::OverShoulder);
 	if (GetCharacter() != NULL) {
 		// get a refrence to the player character
@@ -207,7 +269,11 @@ void AURpg_PlayerController::ActivateOverShoulderCamera() {
 		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) != characterRef->GetCameraBoom()) {
 			// remove the camera from current parent
 			characterRef->GetPlayerCamera()->DetachFromParent();
-			UE_LOG(DebugLog, Warning, TEXT("attaching Cam to player pawn's Camera boom"));
+
+#if !UE_BUILD_SHIPPING
+			UE_LOG(DebugLog, Log, TEXT("ATTACHING Camera to player pawn's Camera boom"));
+#endif // !UE_BUILD_SHIPPING
+
 			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetCameraBoom(), USpringArmComponent::SocketName);
 		}
 		characterRef->GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -216,19 +282,29 @@ void AURpg_PlayerController::ActivateOverShoulderCamera() {
 		characterRef->bUseControllerRotationRoll = false;
 	}
 }
-// Activates Free Range Camera
+
+// Activates Free Range Camera Mode
 void AURpg_PlayerController::ActivateFreeRangeCamera() {
-	UE_LOG(InitLog, Warning, TEXT("ACTIVATING FreeRange CameraMode"));
+
+#if !UE_BUILD_SHIPPING
+	UE_LOG(InitLog, Log, TEXT("ACTIVATING FreeRange CameraMode"));
+#endif // !UE_BUILD_SHIPPING
+	
 	Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FreeRange);
 	if (GetCharacter() != NULL) {
 
 		// get a refrence to the player character
 		AURpg_PlayerCharacter* characterRef = Cast<AURpg_PlayerCharacter>(GetCharacter());
 		
+		// see if we are not connected to the camera boom
 		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) != characterRef->GetCameraBoom()) {
 			// remove the camera from current parent
 			characterRef->GetPlayerCamera()->DetachFromParent();
-			UE_LOG(DebugLog, Warning, TEXT("attaching Cam to player pawn's Camera boom"));
+
+#if !UE_BUILD_SHIPPING
+			UE_LOG(DebugLog, Log, TEXT("ATTACHING Camera to player pawn's Camera boom"));
+#endif // !UE_BUILD_SHIPPING
+
 			// attach the camera to the player pawn's camera boom
 			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetCameraBoom(), USpringArmComponent::SocketName);
 		}
@@ -238,9 +314,14 @@ void AURpg_PlayerController::ActivateFreeRangeCamera() {
 		characterRef->bUseControllerRotationRoll = false;
 	}
 }
-// Activates Skyview Camera
+
+// Activates SkyView Camera Mode
 void AURpg_PlayerController::ActivateSkyViewCamera() {
-	UE_LOG(InitLog, Warning, TEXT("ACTIVATING SkyView CameraMode"));
+
+#if !UE_BUILD_SHIPPING
+	UE_LOG(InitLog, Log, TEXT("ACTIVATING SkyView CameraMode"));
+#endif // !UE_BUILD_SHIPPING
+	
 	Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::SkyViewCamera);
 	if (GetCharacter() != NULL) {
 		// get a refrence to the player character
@@ -248,7 +329,11 @@ void AURpg_PlayerController::ActivateSkyViewCamera() {
 		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) != characterRef->GetCameraBoom()) {
 			// remove the camera from current parent
 			characterRef->GetPlayerCamera()->DetachFromParent();
-			UE_LOG(DebugLog, Warning, TEXT("attaching Cam to player pawn's Camera boom"));
+
+#if !UE_BUILD_SHIPPING
+			UE_LOG(DebugLog, Log, TEXT("ATTACHING Camera to player pawn's Camera boom"));
+#endif // !UE_BUILD_SHIPPING
+			
 			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetCameraBoom(), USpringArmComponent::SocketName);
 		}
 		//characterRef->GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -257,9 +342,14 @@ void AURpg_PlayerController::ActivateSkyViewCamera() {
 		//characterRef->bUseControllerRotationRoll = false;
 	}
 }
-// Activates Free Camera
+
+// Detaches camera and controls from player character, operates like a spectator
 void AURpg_PlayerController::ActivateFreeCamera() {
-	UE_LOG(InitLog, Warning, TEXT("ACTIVATING FreeCameraMode"));
+
+#if !UE_BUILD_SHIPPING
+	UE_LOG(InitLog, Log, TEXT("ACTIVATING FreeCameraMode"));
+#endif // !UE_BUILD_SHIPPING
+	
 	Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FreeCamera);
 	if (GetCharacter() != NULL) {
 		// get a refrence to the player character
@@ -268,7 +358,11 @@ void AURpg_PlayerController::ActivateFreeCamera() {
 		if (Cast<USpringArmComponent>(characterRef->GetPlayerCamera()->GetAttachParent()) == characterRef->GetCameraBoom()) {
 			// remove the camera from current parent
 			characterRef->GetPlayerCamera()->DetachFromParent();
-			UE_LOG(DebugLog, Warning, TEXT("detaching Cam to player pawn's Camera boom"));
+
+#if !UE_BUILD_SHIPPING
+			UE_LOG(DebugLog, Log, TEXT("DETACHING Camera to player pawn's Camera boom"));
+#endif // !UE_BUILD_SHIPPING
+			
 		}
 		//characterRef->GetCharacterMovement()->bOrientRotationToMovement = false;
 		//characterRef->bUseControllerRotationPitch = false;
