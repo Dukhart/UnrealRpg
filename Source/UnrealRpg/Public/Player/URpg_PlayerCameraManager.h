@@ -3,18 +3,25 @@
 #pragma once
 
 #include "Camera/PlayerCameraManager.h"
+
 #include "URpg_PlayerCameraManager.generated.h"
 
 // Different availible Camera modes
 UENUM(BlueprintType)
 enum class ECameraMode : uint8
 {
-	FirstPerson, // standard first person camera with head bob options forr a more real feel.
-	OverShoulder, // 3rd person camera locked in behind the player pawn 
-	FreeRange, // Free moving camera locked in orbit around the player pawn (Similar to Darksouls or Batman Arkham games)
-	SkyViewCamera, // Top down view center locked to player pawn (similar to Diablo or Torchlight)
-	TacticalCamera, // Top down camera locked within a distance from the player pawn or pawns
-	FreeCamera, // completely free moving camera with option ground and wall collision completely disconnected from player pawn (Similar to a spectator controller)
+	// standard first person camera with head bob options forr a more real feel.
+	FirstPerson, 
+	// 3rd person camera locked in behind the player pawn 
+	OverShoulder, 
+	// Free moving camera locked in orbit around the player pawn (Similar to Darksouls or Batman Arkham games)
+	FreeRange, 
+	// Top down view center locked to player pawn (similar to Diablo or Torchlight)
+	SkyViewCamera, 
+	// Top down camera locked within a distance from the player pawn or pawns
+	TacticalCamera, 
+	// completely free moving camera with option ground and wall collision completely disconnected from player pawn (Similar to a spectator controller)
+	FreeCamera, 
 
 	None
 };
@@ -32,7 +39,13 @@ protected:
 	// world and component dependent starting behavior should go here
 	virtual void BeginPlay() override;
 
-	//bool fixedCamera;
+	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	FTimerHandle InitCameraHandle;
+	//UFUNCTION()
+	//void InitCamInterval();
+	UFUNCTION()
+	void InitDefaultCameraMode();
 
 private:
 	// * SETTINGS * //
@@ -52,5 +65,7 @@ public:
 	// gets our camera mode
 	UFUNCTION(BlueprintCallable, Category = CameraSettings)
 		virtual ECameraMode GetCameraMode() const { return eCurrentCameraMode; }
+	UFUNCTION(BlueprintCallable, Category = CameraSettings)
+		virtual ECameraMode GetDefaultCameraMode() const { return eDefaultCameraMode; }
 
 };

@@ -39,3 +39,19 @@ AURpg_GameMode::AURpg_GameMode(const FObjectInitializer& ObjectInitializer)
 	// Failsafe assigns native cpp version
 	HUDClass = AURpg_HUD::StaticClass();
 }
+
+// * PLAYERLOGIN * //
+/** Called after a successful login.  This is the first place it is safe to call replicated functions on the PlayerAController. */
+void AURpg_GameMode::PostLogin(APlayerController* NewPlayer) {
+	Super::PostLogin(NewPlayer);
+	// get the controller as our custom player controller
+	AURpg_PlayerController* controlRef = Cast<AURpg_PlayerController>(NewPlayer);
+	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Cyan, "Detect Post Login");
+	if (controlRef != nullptr) {
+		GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Cyan, "Run Post Login");
+		// tell the controller to initialize Post login Events
+		controlRef->RunPostLoginEvents();
+
+	}
+
+}

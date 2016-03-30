@@ -13,14 +13,26 @@ AURpg_PlayerCameraManager::AURpg_PlayerCameraManager(const FObjectInitializer& O
 	eDefaultCameraMode = ECameraMode::FreeRange;
 	//fixedCamera = true;
 	eCurrentCameraMode = ECameraMode::None;
+	// ensure replicates is true
+	bReplicates = true;
 }
+// set replicated properties
+/*
+void AURpg_PlayerCameraManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	//DOREPLIFETIME(AURpg_PlayerCameraManager, eDefaultCameraMode);
+	//DOREPLIFETIME(AURpg_PlayerCameraManager, eCurrentCameraMode);
+}
+*/
+
 // called after the constructor
 // world and component dependent starting behavior should go here
 void AURpg_PlayerCameraManager::BeginPlay() {
 	Super::BeginPlay();
+	//GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, GetName());
 	// activate our default camera mode
-	Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateCameraMode(eDefaultCameraMode);
-
+	InitDefaultCameraMode();
+	
 	//eCurrentCameraMode = eDefaultCameraMode;
 	/*
 	switch (eDefaultCameraMode) {
@@ -44,5 +56,28 @@ void AURpg_PlayerCameraManager::BeginPlay() {
 	}
 	*/
 	//Cast<AURpg_PlayerController>(GetOwningPlayerController())->ActivateFreeRangeCamera();
+}
+
+// activates our default camera mode
+void AURpg_PlayerCameraManager::InitDefaultCameraMode() {
+	if (Cast<AURpg_PlayerController>(GetOwningPlayerController())) {
+		/* Debug helpers
+		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECameraMode"), true);
+		if (EnumPtr != nullptr) {
+			GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, GetName() + " " + GetOwningPlayerController()->GetName() + " " + EnumPtr->GetNameByIndex(static_cast<uint8>(eDefaultCameraMode)).ToString());
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, GetName() + " " + GetOwningPlayerController()->GetName());
+		}
+		*/
+		AURpg_PlayerController* controlRef = Cast<AURpg_PlayerController>(GetOwningPlayerController());
+		if (controlRef != nullptr) {
+			controlRef->ActivateCameraMode(eDefaultCameraMode);
+		}
+	}
+	else if (GetWorld()) {
+		// will re-call this function in 1 sec if it fails
+		GetWorld()->GetTimerManager().SetTimer(InitCameraHandle, this, &AURpg_PlayerCameraManager::InitDefaultCameraMode, 1, false);
+	}
 }
 
