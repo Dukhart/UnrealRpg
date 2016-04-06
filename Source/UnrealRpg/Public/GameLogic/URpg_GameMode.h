@@ -2,7 +2,21 @@
 #pragma once
 
 #include "GameFramework/GameMode.h"
+
+#include "Dons_StaticFunctionLibrary.h"
+
 #include "URpg_GameMode.generated.h"
+
+UENUM(BlueprintType)
+enum class ESpawnStyles : uint8 {
+	Sequence,
+	Random,
+	RandomSequence,
+	ByTag,
+
+
+	None
+};
 
 UCLASS(minimalapi)
 class AURpg_GameMode : public AGameMode
@@ -10,11 +24,13 @@ class AURpg_GameMode : public AGameMode
 	GENERATED_BODY()
 
 protected:
-	// * INTITIALIZATION * //
+	// * INITIALIZATION * //
 	// Constructor
 	AURpg_GameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
+	// called after the constructor
+	virtual void BeginPlay() override;
 	// * PLAYERLOGIN * //
+
 	/**
 	* Accept or reject a player attempting to join the server.  Fails login if you set the ErrorMessage to a non-empty string.
 	* PreLogin is called before Login.  Significant game time may pass before Login is called, especially if content is downloaded.
@@ -48,7 +64,79 @@ protected:
 
 	/** Called after a successful login.  This is the first place it is safe to call replicated functions on the PlayerAController. */
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	// determines what player start to use when spawning a character
+	virtual class AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+public:
+	// * PLAYER START POINT LOGIC * //
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		virtual class AActor* GetPlayerStart_Sequence();
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		virtual class AActor* GetPlayerStart_Random() const;
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		virtual class AActor* GetPlayerStart_RandomSequence();
+	// search for a player start by tag
+	// only returns the first matching tag found Unique tags are recomended
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		virtual class AActor* GetPlayerStart_ByTag(FName tag) const;
+	// used by random sequence mode to reorder the player starts
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		virtual void ShufflePlayerStarts();
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		virtual TArray<APlayerStart*> GetAllPlayerStarts();
 
+protected:
+	UPROPERTY()
+		bool bHasSetSpawnStyle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+		APlayerStart* DefaultPlayerStart;
+	// the tag to look for when spawning a player by Spawn Point Tag
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+		FName SpawnTag;
+	// the current index when spawning by sequence
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Spawn)
+		int32 spawnIndex;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Spawn)
+		TArray<APlayerStart*> playerStarts;
+	// Holds the spawning style to use when determining where to spawn a player
+	UPROPERTY(EditDefaultsOnly, Category = Spawn)
+		ESpawnStyles eSpawnStyle;
+public:
+	// * GETTERS AND SETTERS * //
+	// Get Spawn Style
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		ESpawnStyles GetESpawnStyle() { return eSpawnStyle; }
+	// Set Spawn Style
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		void SetESpawnStyle(ESpawnStyles newStyle) {
+		eSpawnStyle = newStyle;
+		GetAllPlayerStarts();
+
+		TArray<AActor*> aRefs;
+
+		switch (eSpawnStyle)
+		{
+		case ESpawnStyles::Sequence:
+			aRefs.Empty();
+			// cast the player starts to actors
+			for (int32 i = 0; i < playerStarts.Num(); ++i) {
+				aRefs.Add(Cast<AActor>(playerStarts[i]));
+			}
+			// sort the player starts
+			aRefs = UDons_StaticFunctionLibrary::SortActorsAlphabetically(aRefs);
+			// clear the player starts
+			playerStarts.Empty();
+			for (int32 i = 0; i < aRefs.Num(); ++i) {
+				// put the sorted player starts back
+				playerStarts.Add(Cast<APlayerStart>(aRefs[i]));
+			}
+			break;
+		case ESpawnStyles::RandomSequence:
+			ShufflePlayerStarts();
+		default:
+			break;
+		}
+		bHasSetSpawnStyle = true;
+	}
 };
 
 

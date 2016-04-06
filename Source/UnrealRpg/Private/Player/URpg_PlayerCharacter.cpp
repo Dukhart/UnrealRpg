@@ -81,14 +81,14 @@ void AURpg_PlayerCharacter::RunPostLoginEvents_Implementation() {
 }
 // binds client input from the controller to the characters movement
 void AURpg_PlayerCharacter::CLIENT_BindInputDelegates_Implementation() {
-	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "starts Binding Delegates");
+	//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "starts Binding Delegates");
 	if (GetController() != nullptr) {
 		// get the InPawn as a URpg_Character
 		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
-		GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "has controller Binding Delegates");
+		//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "has controller Binding Delegates");
 		// check the cast was successfull
 		if (ControlRef != nullptr) {
-			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "Binding Delegates");
+		//	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "Binding Delegates");
 			// Bind Character movement methods to our delegates
 			ControlRef->Move_Strafe.AddDynamic(this, &AURpg_PlayerCharacter::DoMoveStrafe);
 			ControlRef->Move_ForwardBack.AddDynamic(this, &AURpg_PlayerCharacter::DoMoveForwardBack);

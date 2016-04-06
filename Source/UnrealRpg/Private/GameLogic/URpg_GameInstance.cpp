@@ -12,6 +12,7 @@ UURpg_GameInstance::UURpg_GameInstance(const FObjectInitializer& ObjectInitializ
 	AssetLoader = new FStreamableManager;
 }
 
+
 // * LOADING OPERATIONS * //
 /*
  UObject* UURpg_GameInstance::LoadAsset(FString aPath, bool bUseSynchronous = false) {

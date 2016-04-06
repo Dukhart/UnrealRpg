@@ -16,6 +16,7 @@ protected:
 	// Constructor
 	UURpg_GameInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+
 	// * LOADING OPERATIONS * //
 private:
 	// Used to load assets at runtime
