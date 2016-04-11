@@ -4,6 +4,8 @@
 #include "GameFramework/PlayerController.h"
 
 #include "URpg_PlayerCameraManager.h"
+// includes for our custom classes
+#include "URpg_PlayerCharacter.h"
 
 #include "URpg_PlayerController.generated.h"
 
@@ -24,6 +26,8 @@ protected:
 	// * INTITIALIZATION * //
 	// Constructor
 	AURpg_PlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	// handles replicated property behavior
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 	// Called after the constructor
 	// World and component dependent starting behavior should go here
 	virtual void BeginPlay() override;
@@ -32,10 +36,20 @@ protected:
 	// called when our controller possess a new pawn
 	virtual void Possess(APawn* InPawn) override;
 
+
 public:
+	UFUNCTION(Client, Reliable)
+		void CLIENT_RunPostLogin();
+		void CLIENT_RunPostLogin_Implementation();
+	UFUNCTION(Server, Reliable, WithValidation)
+		void SERVER_RunPostLogin();
+		void SERVER_RunPostLogin_Implementation();
+		bool SERVER_RunPostLogin_Validate();
 	// handles contruction that requires the player to be fully loaded
-	UFUNCTION()
-	virtual void RunPostLoginEvents();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
+	void RunPostLoginEvents();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
+	void RunRespawnEvents();
 
 protected:
 	// * SETTINGS * //
@@ -49,7 +63,12 @@ protected:
 	// inverts X axis camera movment if true
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controls)
 		bool bInvertLookXAxis;
+	// Current class of the character
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Player)
+	TSubclassOf<AURpg_PlayerCharacter> CharacterClass;
 
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Status)
+		bool bIsAlive;
 public:
 	// * DELEGATES * //
 	// handles
@@ -88,7 +107,7 @@ public:
 	// * CAMERA * //
 	// Switch between Controller/Camera styles
 	UFUNCTION(BlueprintCallable, Category = Camera)
-		virtual void ActivateCameraMode(ECameraMode newCameraMode);
+		virtual void ActivateCameraMode(ECameraMode newCameraMode, bool bForceActivate = false);
 	// Attach the Camera to the Pawns camera Boom
 	// returns true if attach occured
 	// returns false if it failed
@@ -123,4 +142,16 @@ public:
 		}
 		return ECameraMode::None;
 	};
+	UFUNCTION(BlueprintCallable, Category = Status)
+	bool GetIsAlive() {
+		return bIsAlive;
+	}
+	// sets Alive status
+	// only works on authority
+	UFUNCTION(BlueprintCallable, Category = Status)
+		void SetIsAlive(bool InStatus) {
+		if (Role == ROLE_Authority) {
+			bIsAlive = InStatus;
+		}
+	}
 };

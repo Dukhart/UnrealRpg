@@ -39,18 +39,17 @@ protected:
 	// world and component dependent starting behavior should go here
 	virtual void BeginPlay() override;
 
-	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	FTimerHandle InitCameraHandle;
+	//FTimerHandle InitCameraHandle;
 	//UFUNCTION()
 	//void InitCamInterval();
-	UFUNCTION()
-	void InitDefaultCameraMode();
+	
 
 private:
 	// * SETTINGS * //
 	// Current camera mode activated
-	UPROPERTY(VisibleAnywhere, Category = CameraSettings)
+	UPROPERTY(Replicated, VisibleAnywhere, Category = CameraSettings)
 		ECameraMode eCurrentCameraMode;
 	// default camera mode to start on begin play
 	// TODO: add load function that starts last used camera mode as default
@@ -58,10 +57,21 @@ private:
 		ECameraMode eDefaultCameraMode;
 
 public:
+
+	UFUNCTION(NetMulticast, Reliable)
+	void InitDefaultCameraMode();
+	void InitDefaultCameraMode_Implementation();
+
 	// * GETTERS AND SETTERS * //
 	// Sets our camera mode
 	UFUNCTION(BlueprintCallable, Category = CameraSettings)
-		virtual void SetCameraMode(ECameraMode newCameraMode) { eCurrentCameraMode = newCameraMode; }
+		virtual void SetCameraMode(ECameraMode newCameraMode) { 
+		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECameraMode"), true);
+		if (EnumPtr != nullptr && Role == ROLE_AutonomousProxy) {
+			GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, GetName() + " ne mode " + GetOwningPlayerController()->GetName() + " " + EnumPtr->GetNameByIndex(static_cast<uint8>(newCameraMode)).ToString());
+		}
+
+		eCurrentCameraMode = newCameraMode; }
 	// gets our camera mode
 	UFUNCTION(BlueprintCallable, Category = CameraSettings)
 		virtual ECameraMode GetCameraMode() const { return eCurrentCameraMode; }

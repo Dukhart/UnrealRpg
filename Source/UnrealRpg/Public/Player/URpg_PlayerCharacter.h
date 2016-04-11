@@ -27,20 +27,29 @@ protected:
 	// constructor
 	// add components and set default values
 	AURpg_PlayerCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	// set replicated properties
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// called after the constructor
 	// world and component dependent starting behavior should go here
 	virtual void BeginPlay() override;
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	UFUNCTION(Client, Reliable)
+	// binds client input from the controller to the characters movement
+	UFUNCTION(BlueprintCallable, Client, Reliable, Category = Input)
 	void CLIENT_BindInputDelegates();
 	void CLIENT_BindInputDelegates_Implementation();
 
 public:
-	UFUNCTION(BlueprintNativeEvent, Category = Initialization)
+	// runs when a player first logs in
+	UFUNCTION(BlueprintNativeEvent, Category = Spawn)
 	void RunPostLoginEvents();
+	// runs whenever the character is respawned
+	UFUNCTION(BlueprintNativeEvent, Category = Spawn)
+	void RunRespawnEvents();
 
+protected:
+	// * DESTRUCTION * //
+	// extra end play behavior
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+public:
 	// * MOVEMENT * //
 	// Detect Character Movement Input on the X axis (Left / Right)
 	UFUNCTION()

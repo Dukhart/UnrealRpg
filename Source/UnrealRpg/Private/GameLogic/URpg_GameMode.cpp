@@ -137,12 +137,13 @@ void AURpg_GameMode::PostLogin(APlayerController* NewPlayer) {
 	if (controlRef != nullptr) {
 		//	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Cyan, "Run Post Login");
 			// tell the controller to initialize Post login Events
-		controlRef->RunPostLoginEvents();
+		controlRef->CLIENT_RunPostLogin();
 
 	}
 
 }
 
+// * PLAYER START POINT LOGIC * //
 class AActor* AURpg_GameMode::GetPlayerStart_Sequence() {
 	AActor* aRef = nullptr;
 	// check the spawn index is valid
@@ -279,9 +280,29 @@ TArray<APlayerStart*> AURpg_GameMode::GetAllPlayerStarts() {
 		{
 			// add the player starts to the playerStarts array
 			playerStarts.Add(*ActorItr);
-			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "Adding " + ActorItr->GetName());
+			//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "Adding " + ActorItr->GetName());
 		}
 	}
 	// return the array
 	return playerStarts;
 }
+
+// * PLAYER SPAWNING / KILLING * //
+// Kill Input player pawn
+void AURpg_GameMode::KillPlayer_Implementation(AURpg_PlayerController* InPlayer) {
+
+}
+/*
+bool AURpg_GameMode::KillPlayer_Validate(AURpg_PlayerController* InPlayer) {
+	return true;
+}
+*/
+// Respawn player
+void AURpg_GameMode::RespawnPlayer_Implementation(AURpg_PlayerController* InPlayer) {
+
+}
+/*
+bool AURpg_GameMode::RespawnPlayer_Validate(AURpg_PlayerController* InPlayer) {
+	return true;
+}
+*/

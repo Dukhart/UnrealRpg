@@ -74,26 +74,70 @@ void AURpg_PlayerCharacter::BeginPlay() {
 	//AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
 
 }
-
+// runs when a player first logs in
 void AURpg_PlayerCharacter::RunPostLoginEvents_Implementation() {
 	// tell the client to bind inputs
+	//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "local");
 	CLIENT_BindInputDelegates();
+	// get our controller
+	if (GetController() != nullptr) {
+		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
+		if (ControlRef != nullptr) {
+			// set is Alive to true
+			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Set Is Alive TRUE");
+			ControlRef->SetIsAlive(true);
+		}
+	}
 }
+// runs whenever the character is respawned
+void AURpg_PlayerCharacter::RunRespawnEvents_Implementation() {
+	// tell the client to bind inputs
+	CLIENT_BindInputDelegates();
+	// get our controller
+	if (GetController() != nullptr) {
+		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
+		if (ControlRef != nullptr) {
+			// set is Alive to true
+			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Set Is Alive TRUE");
+			ControlRef->SetIsAlive(true);
+		}
+	}
+}
+
 // binds client input from the controller to the characters movement
 void AURpg_PlayerCharacter::CLIENT_BindInputDelegates_Implementation() {
-	//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "starts Binding Delegates");
+	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "starts Binding Delegates");
 	if (GetController() != nullptr) {
 		// get the InPawn as a URpg_Character
 		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
-		//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "has controller Binding Delegates");
+		GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "has controller Binding Delegates");
 		// check the cast was successfull
 		if (ControlRef != nullptr) {
-		//	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "Binding Delegates");
+			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "Binding Delegates");
 			// Bind Character movement methods to our delegates
 			ControlRef->Move_Strafe.AddDynamic(this, &AURpg_PlayerCharacter::DoMoveStrafe);
 			ControlRef->Move_ForwardBack.AddDynamic(this, &AURpg_PlayerCharacter::DoMoveForwardBack);
 		}
 	}
+}
+
+// * DESTRUCTION * //
+// extra end play behavior
+void AURpg_PlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "END PLAY");
+	// get our controller
+	/*
+	if (GetController() != nullptr) {
+		GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Has Controller");
+		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
+		if (ControlRef != nullptr) {
+			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Set Is Alive FALSE");
+			// set is Alive to true
+			ControlRef->SetIsAlive(false);
+		}
+	}
+	*/
+	Super::EndPlay(EndPlayReason);
 }
 
 // * MOVEMENT * //
@@ -135,13 +179,14 @@ void AURpg_PlayerCharacter::DoLookRightLeft(float value) {
 }
 
 ECameraMode AURpg_PlayerCharacter::GetPlayersCameraMode() {
-	SERVER_RequestPlayerCameraMode();
+	if (Role == ROLE_AutonomousProxy)
+		SERVER_RequestPlayerCameraMode();
 
 	return eCurrentCameraMode;
 }
 
 void AURpg_PlayerCharacter::SERVER_RequestPlayerCameraMode_Implementation() {
-	ECameraMode camModeRef = ECameraMode::None;
+	//ECameraMode camModeRef = ECameraMode::None;
 	if (GetController() != nullptr) {
 		AURpg_PlayerController* controlRef = Cast<AURpg_PlayerController>(GetController());
 		if (controlRef != nullptr) {

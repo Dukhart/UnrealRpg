@@ -4,7 +4,7 @@
 #include "URpg_PlayerCameraManager.h"
 // includes for custom classes
 #include "URpg_PlayerController.h"
-
+#include "Net/UnrealNetwork.h"
 
 // * INTITIALIZATION * //
 // Constructor
@@ -17,13 +17,13 @@ AURpg_PlayerCameraManager::AURpg_PlayerCameraManager(const FObjectInitializer& O
 	bReplicates = true;
 }
 // set replicated properties
-/*
+
 void AURpg_PlayerCameraManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	//DOREPLIFETIME(AURpg_PlayerCameraManager, eDefaultCameraMode);
-	//DOREPLIFETIME(AURpg_PlayerCameraManager, eCurrentCameraMode);
+	DOREPLIFETIME(AURpg_PlayerCameraManager, eCurrentCameraMode);
 }
-*/
+
 
 // called after the constructor
 // world and component dependent starting behavior should go here
@@ -31,7 +31,7 @@ void AURpg_PlayerCameraManager::BeginPlay() {
 	Super::BeginPlay();
 	//GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, GetName());
 	// activate our default camera mode
-	InitDefaultCameraMode();
+	//InitDefaultCameraMode();
 	
 	//eCurrentCameraMode = eDefaultCameraMode;
 	/*
@@ -59,9 +59,10 @@ void AURpg_PlayerCameraManager::BeginPlay() {
 }
 
 // activates our default camera mode
-void AURpg_PlayerCameraManager::InitDefaultCameraMode() {
+void AURpg_PlayerCameraManager::InitDefaultCameraMode_Implementation() {
 	if (Cast<AURpg_PlayerController>(GetOwningPlayerController())) {
-		/* Debug helpers
+		 //Debug helpers
+		/*
 		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECameraMode"), true);
 		if (EnumPtr != nullptr) {
 			GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, GetName() + " " + GetOwningPlayerController()->GetName() + " " + EnumPtr->GetNameByIndex(static_cast<uint8>(eDefaultCameraMode)).ToString());
@@ -70,14 +71,16 @@ void AURpg_PlayerCameraManager::InitDefaultCameraMode() {
 			GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, GetName() + " " + GetOwningPlayerController()->GetName());
 		}
 		*/
+		
 		AURpg_PlayerController* controlRef = Cast<AURpg_PlayerController>(GetOwningPlayerController());
 		if (controlRef != nullptr) {
-			controlRef->ActivateCameraMode(eDefaultCameraMode);
+			GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, "set");
+			controlRef->ActivateCameraMode(eDefaultCameraMode, true);
 		}
 	}
-	else if (GetWorld()) {
+	//else if (GetWorld()) {
 		// will re-call this function in 1 sec if it fails
-		GetWorld()->GetTimerManager().SetTimer(InitCameraHandle, this, &AURpg_PlayerCameraManager::InitDefaultCameraMode, 1, false);
-	}
+	//	GetWorld()->GetTimerManager().SetTimer(InitCameraHandle, this, &AURpg_PlayerCameraManager::InitDefaultCameraMode, 1, false);
+	//}
 }
 

@@ -12,6 +12,7 @@
 
 // Custom  global game logic
 #include "URpg_GameInstance.h"
+#include "URpg_GameMode.h"
 
 // LOGS
 //General Log
