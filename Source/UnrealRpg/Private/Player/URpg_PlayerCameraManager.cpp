@@ -74,7 +74,7 @@ void AURpg_PlayerCameraManager::InitDefaultCameraMode_Implementation() {
 		
 		AURpg_PlayerController* controlRef = Cast<AURpg_PlayerController>(GetOwningPlayerController());
 		if (controlRef != nullptr) {
-			GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, "set");
+			//GEngine->AddOnScreenDebugMessage(-1, 100, FColor::Black, "set");
 			controlRef->ActivateCameraMode(eDefaultCameraMode, true);
 		}
 	}

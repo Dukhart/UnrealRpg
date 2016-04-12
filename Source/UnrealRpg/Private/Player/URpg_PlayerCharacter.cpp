@@ -106,11 +106,11 @@ void AURpg_PlayerCharacter::RunRespawnEvents_Implementation() {
 
 // binds client input from the controller to the characters movement
 void AURpg_PlayerCharacter::CLIENT_BindInputDelegates_Implementation() {
-	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "starts Binding Delegates");
+	//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "starts Binding Delegates");
 	if (GetController() != nullptr) {
 		// get the InPawn as a URpg_Character
 		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
-		GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "has controller Binding Delegates");
+		//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "has controller Binding Delegates");
 		// check the cast was successfull
 		if (ControlRef != nullptr) {
 			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "Binding Delegates");
@@ -124,7 +124,7 @@ void AURpg_PlayerCharacter::CLIENT_BindInputDelegates_Implementation() {
 // * DESTRUCTION * //
 // extra end play behavior
 void AURpg_PlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
-	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "END PLAY");
+	//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "END PLAY");
 	// get our controller
 	/*
 	if (GetController() != nullptr) {

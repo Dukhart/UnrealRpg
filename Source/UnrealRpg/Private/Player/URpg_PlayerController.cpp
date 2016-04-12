@@ -29,6 +29,12 @@ AURpg_PlayerController::AURpg_PlayerController(const FObjectInitializer& ObjectI
 
 	// status
 	bIsAlive = false;
+	bLockoutDeathNSpawning = false;
+	bIsImmortal = false;
+	bCanSpawn = false;
+
+	SuicideHeldTime = 0;
+	SuicideHoldTime = 1;
 }
 // handles replicated property behavior
 void AURpg_PlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
@@ -38,6 +44,9 @@ void AURpg_PlayerController::GetLifetimeReplicatedProps(TArray< FLifetimePropert
 	// Replicate to everyone
 	DOREPLIFETIME(AURpg_PlayerController, CharacterClass);
 	DOREPLIFETIME(AURpg_PlayerController, bIsAlive);
+	DOREPLIFETIME(AURpg_PlayerController, bLockoutDeathNSpawning);
+	DOREPLIFETIME(AURpg_PlayerController, bIsImmortal);
+	DOREPLIFETIME(AURpg_PlayerController, bCanSpawn);
 }
 
 // Binds user input to functions
@@ -56,6 +65,8 @@ void AURpg_PlayerController::SetupInputComponent() {
 		InputComponent->BindAxis("Look_RightLeftRate", this, &AURpg_PlayerController::LookRightLeftRate);
 		InputComponent->BindAxis("Look_RightLeft", this, &AURpg_PlayerController::LookRightLeft);
 		// Bind Input BUTTONS
+		InputComponent->BindAction("SuicideRespawn", IE_Pressed, this, &AURpg_PlayerController::OnRespawnSuicide_Press);
+		InputComponent->BindAction("SuicideRespawn", IE_Released, this, &AURpg_PlayerController::OnRespawnSuicide_Release);
 	}
 
 }
@@ -84,17 +95,17 @@ void AURpg_PlayerController::Possess(APawn* InPawn) {
 
 void AURpg_PlayerController::SERVER_RunPostLogin_Implementation() {
 	if (GetPawn() != nullptr && PlayerCameraManager != nullptr && GetPawn()->GetController() != nullptr) {
-		GEngine->AddOnScreenDebugMessage(9, 50, FColor::Red, "server pl call");
+		//GEngine->AddOnScreenDebugMessage(9, 50, FColor::Red, "server pl call");
 		RunPostLoginEvents();
 		AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
 		if (camManRef != nullptr) {
-			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Init CAmera");
+			//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Init CAmera");
 			camManRef->InitDefaultCameraMode();
 		}
 	}
 	else {
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AURpg_PlayerController::SERVER_RunPostLogin);
-		GEngine->AddOnScreenDebugMessage(10, 50, FColor::Red, "server pl wait");
+		//GEngine->AddOnScreenDebugMessage(10, 50, FColor::Red, "server pl wait");
 	}
 }
 bool AURpg_PlayerController::SERVER_RunPostLogin_Validate() {
@@ -103,17 +114,17 @@ bool AURpg_PlayerController::SERVER_RunPostLogin_Validate() {
 
 void AURpg_PlayerController::CLIENT_RunPostLogin_Implementation() {
 		if (GetPawn() != nullptr && PlayerCameraManager != nullptr && GetPawn()->GetController() != nullptr) {
-			GEngine->AddOnScreenDebugMessage(11, 50, FColor::Red, "pl call");
+			//GEngine->AddOnScreenDebugMessage(11, 50, FColor::Red, "pl call");
 			SERVER_RunPostLogin();
 			AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
 			if (camManRef != nullptr) {
-				GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Init CAmera");
+				//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Init CAmera");
 				camManRef->InitDefaultCameraMode();
 			}
 		}
 		else {
 			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AURpg_PlayerController::CLIENT_RunPostLogin);
-			GEngine->AddOnScreenDebugMessage(12, 50, FColor::Red, "pl wait");
+			//GEngine->AddOnScreenDebugMessage(12, 50, FColor::Red, "pl wait");
 		}
 }
 // handles contruction that requires the player to be fully loaded
@@ -150,8 +161,9 @@ void AURpg_PlayerController::RunRespawnEvents_Implementation() {
 }
 
 // * INPUT * //
+// AXIS
 // Detect Character Movement Input on the X axis (Left / Right)
-void AURpg_PlayerController::MoveStrafe(float value) {
+void AURpg_PlayerController::MoveStrafe_Implementation(float value) {
 	// make sure we have a pawn
 	if (GetPawn() != nullptr)
 	{
@@ -252,7 +264,7 @@ void AURpg_PlayerController::MoveStrafe(float value) {
 }
 
 // Detect Character Movement Input on the Y axis (Forward / Back)
-void AURpg_PlayerController::MoveForwardBack(float value) {
+void AURpg_PlayerController::MoveForwardBack_Implementation(float value) {
 	// make sure we have a pawn
 	if (GetPawn() != nullptr)
 	{
@@ -351,11 +363,11 @@ void AURpg_PlayerController::MoveForwardBack(float value) {
 }
 
 // Detect Jump Input
-void AURpg_PlayerController::MoveJump(float value) {
+void AURpg_PlayerController::MoveJump_Implementation(float value) {
 
 }
 // Detect Camera Movement Input on the Y Axis
-void AURpg_PlayerController::LookUpDownRate(float value) {
+void AURpg_PlayerController::LookUpDownRate_Implementation(float value) {
 	if (bInvertLookYAxis) {
 		value *= -1.0f;
 	}
@@ -363,14 +375,14 @@ void AURpg_PlayerController::LookUpDownRate(float value) {
 	AddPitchInput(value * baseLookRate * GetWorld()->GetDeltaSeconds());
 }
 // Detect Camera Movement Input on the Y Axis
-void AURpg_PlayerController::LookUpDown(float value) {
+void AURpg_PlayerController::LookUpDown_Implementation(float value) {
 	if (bInvertLookYAxis) {
 		value *= -1.0f;
 	}
 	AddPitchInput(value);
 }
 // Detect Camera Movement Input on the X Axis
-void AURpg_PlayerController::LookRightLeftRate(float value) {
+void AURpg_PlayerController::LookRightLeftRate_Implementation(float value) {
 	if (bInvertLookXAxis) {
 		value *= -1.0f;
 	}
@@ -378,12 +390,85 @@ void AURpg_PlayerController::LookRightLeftRate(float value) {
 	AddYawInput(value * baseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 // Detect Camera Movement Input on the X Axis
-void AURpg_PlayerController::LookRightLeft(float value) {
+void AURpg_PlayerController::LookRightLeft_Implementation(float value) {
 	if (bInvertLookXAxis) {
 		value *= -1.0f;
 	}
 	AddYawInput(value);
 }
+
+// ACTIONS
+// Suicide player if held and alive
+// Respawn the player if pressed when dead
+void AURpg_PlayerController::OnRespawnSuicide_Press_Implementation() {
+	if (GetWorld() != nullptr) {
+		GetWorld()->GetTimerManager().SetTimer(Suicide_TimerHandle,this, &AURpg_PlayerController::OnRespawnSuicide_Hold, 0.01f, true);
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "StartTimer");
+	}
+}
+void AURpg_PlayerController::OnRespawnSuicide_Release_Implementation() {
+	// if alive check for suicede params
+	if (bIsAlive) {
+		// check we held the button down for the required time
+		if (SuicideHeldTime >= SuicideHoldTime) {
+			// suicide request doesn't require immortality check so override immortality check on reuest to server
+			SERVER_KillPlayer(true);
+		}
+	}
+	// else we are dead so request respawn
+	else {
+		SERVER_RespawnPlayer();
+	}
+	
+	// reset hold time
+	SuicideHeldTime = 0;
+	if (GetWorld() != nullptr) {
+		// clear the timer
+		GetWorld()->GetTimerManager().ClearTimer(Suicide_TimerHandle);
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "StopTimer");
+	}
+}
+void AURpg_PlayerController::OnRespawnSuicide_Hold_Implementation() {
+	// increase held time by activation interval
+	if (GetWorld() != nullptr) {
+		SuicideHeldTime += GetWorld()->GetTimerManager().GetTimerRate(Suicide_TimerHandle);
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::SanitizeFloat(SuicideHeldTime));
+}
+// * REQUEST TO SERVER * //
+// request the server to kill the player
+void AURpg_PlayerController::SERVER_KillPlayer_Implementation(bool bOverrideImmortality) {
+	if ((bIsImmortal == false || bOverrideImmortality == true) && bLockoutDeathNSpawning == false) {
+		if (GetWorld() != nullptr || GetWorld()->GetAuthGameMode() != nullptr) {
+			AURpg_GameMode* gm = Cast<AURpg_GameMode>(GetWorld()->GetAuthGameMode());
+			if (gm != nullptr) {
+				// lockout spawn and kill options untill operation is complete
+				SetLockoutDeathNSpawning(true);
+				gm->KillPlayer(this);
+			}
+		}
+	}
+}
+bool AURpg_PlayerController::SERVER_KillPlayer_Validate(bool bOverrideImmortality) {
+	return true;
+}
+// request the server to respawn the player
+void AURpg_PlayerController::SERVER_RespawnPlayer_Implementation() {
+	if (bCanSpawn == true && bLockoutDeathNSpawning == false) {
+		if (GetWorld() != nullptr || GetWorld()->GetAuthGameMode() != nullptr) {
+			AURpg_GameMode* gm = Cast<AURpg_GameMode>(GetWorld()->GetAuthGameMode());
+			if (gm != nullptr) {
+				// lockout spawn and kill options until operation is complete
+				SetLockoutDeathNSpawning(true);
+				gm->RespawnPlayer(this);
+			}
+		}
+	}
+}
+bool AURpg_PlayerController::SERVER_RespawnPlayer_Validate() {
+	return true;
+}
+
 // * CAMERA * //
 // Switch between Controller/Camera styles
 void AURpg_PlayerController::ActivateCameraMode(ECameraMode newCameraMode, bool bForceActivate) {
@@ -474,10 +559,10 @@ void AURpg_PlayerController::ActivateOverShoulderCamera() {
 #if !UE_BUILD_SHIPPING
 	UE_LOG(InitLog, Log, TEXT("ACTIVATING OverTheShoulder CameraMode"));
 #endif // !UE_BUILD_SHIPPING
-	GEngine->AddOnScreenDebugMessage(-1, 19, FColor::Red, "os settings");
+	//GEngine->AddOnScreenDebugMessage(-1, 19, FColor::Red, "os settings");
 	Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::OverShoulder);
 	if (GetCharacter() != nullptr) {
-		GEngine->AddOnScreenDebugMessage(-1, 19, FColor::Red, "os settings2");
+		//GEngine->AddOnScreenDebugMessage(-1, 19, FColor::Red, "os settings2");
 		// get a refrence to the player character
 		AURpg_PlayerCharacter* characterRef = Cast<AURpg_PlayerCharacter>(GetCharacter());
 

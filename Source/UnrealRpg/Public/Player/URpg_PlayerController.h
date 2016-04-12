@@ -35,21 +35,19 @@ protected:
 	virtual void SetupInputComponent() override;
 	// called when our controller possess a new pawn
 	virtual void Possess(APawn* InPawn) override;
-
-
 public:
 	UFUNCTION(Client, Reliable)
 		void CLIENT_RunPostLogin();
-		void CLIENT_RunPostLogin_Implementation();
+	void CLIENT_RunPostLogin_Implementation();
 	UFUNCTION(Server, Reliable, WithValidation)
 		void SERVER_RunPostLogin();
-		void SERVER_RunPostLogin_Implementation();
-		bool SERVER_RunPostLogin_Validate();
+	void SERVER_RunPostLogin_Implementation();
+	bool SERVER_RunPostLogin_Validate();
 	// handles contruction that requires the player to be fully loaded
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
-	void RunPostLoginEvents();
+		void RunPostLoginEvents();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
-	void RunRespawnEvents();
+		void RunRespawnEvents();
 
 protected:
 	// * SETTINGS * //
@@ -65,43 +63,79 @@ protected:
 		bool bInvertLookXAxis;
 	// Current class of the character
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Player)
-	TSubclassOf<AURpg_PlayerCharacter> CharacterClass;
-
+		TSubclassOf<AURpg_PlayerCharacter> CharacterClass;
+	// is the character alive
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Status)
 		bool bIsAlive;
+	// bools used for spawning / death logic
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Spawn)
+		bool bLockoutDeathNSpawning;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Spawn)
+		bool bIsImmortal;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Spawn)
+		bool bCanSpawn;
+	// suicide timers
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	float SuicideHeldTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	float SuicideHoldTime;
+
+	FTimerHandle Suicide_TimerHandle;
+
 public:
 	// * DELEGATES * //
 	// handles
 	UPROPERTY(BlueprintAssignable, Category = Input)
-	FMove_Strafe Move_Strafe;
+		FMove_Strafe Move_Strafe;
 	UPROPERTY(BlueprintAssignable, Category = Input)
-	FMove_Strafe Move_ForwardBack;
+		FMove_Strafe Move_ForwardBack;
 	UPROPERTY(BlueprintAssignable, Category = Input)
-	FLook_UpDown Look_UpDown;
+		FLook_UpDown Look_UpDown;
 	UPROPERTY(BlueprintAssignable, Category = Input)
-	FLook_RightLeft Look_RightLeft;
-	
+		FLook_RightLeft Look_RightLeft;
+
 protected:
 	// * INPUT * //
+	// AXIS
 	// Detect Character Movement Input on the X axis (Left / Right)
-	UFUNCTION()
-	virtual void MoveStrafe(float value);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void MoveStrafe(float value);
 	// Detect Character Movement Input on the Y axis (Forward / Back)
-	UFUNCTION()
-	virtual void MoveForwardBack(float value);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void MoveForwardBack(float value);
 	// Detect Jump Input
-	UFUNCTION()
-	virtual void MoveJump(float value);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void MoveJump(float value);
 	// Detect Camera Movement Input on the Y Axis
-	UFUNCTION()
-	virtual void LookUpDownRate(float value);
-	UFUNCTION()
-	virtual void LookUpDown(float value);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void LookUpDownRate(float value);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void LookUpDown(float value);
 	// Detect Camera Movement Input on the X Axis
-	UFUNCTION()
-	virtual void LookRightLeftRate(float value);
-	UFUNCTION()
-	virtual void LookRightLeft(float value);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void LookRightLeftRate(float value);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void LookRightLeft(float value);
+
+	// Suicide player if held and alive
+	// Respawn the player if pressed when dead
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void OnRespawnSuicide_Press();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void OnRespawnSuicide_Release();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
+		void OnRespawnSuicide_Hold();
+
+
+	// * REQUEST TO SERVER * //
+	// request the server to kill the player
+	UFUNCTION(Server, Reliable, WithValidation)
+		void SERVER_KillPlayer(bool bOverrideImmortality = false);
+	// request the server to respawn the player
+	UFUNCTION(Server, Reliable, WithValidation)
+		void SERVER_RespawnPlayer();
+
+
 
 public:
 	// * CAMERA * //
@@ -116,24 +150,24 @@ public:
 private:
 	// Activates First Person Camera Mode
 	UFUNCTION()
-	virtual void ActivateFirstPersonCamera();
+		virtual void ActivateFirstPersonCamera();
 	// Activates Over the Shoulder Camera Mode
 	UFUNCTION()
-	virtual void ActivateOverShoulderCamera();
+		virtual void ActivateOverShoulderCamera();
 	// Activates Free Range Camera Mode
 	UFUNCTION()
-	virtual void ActivateFreeRangeCamera();
+		virtual void ActivateFreeRangeCamera();
 	// Activates Sky View Camera Mode
 	UFUNCTION()
-	virtual void ActivateSkyViewCamera();
+		virtual void ActivateSkyViewCamera();
 	// Detaches camera and controls from player character, operates like a spectator
 	UFUNCTION()
-	virtual void ActivateFreeCamera();
+		virtual void ActivateFreeCamera();
 
 public:
 	// * GETTERS AND SETTERS * //
 	UFUNCTION(BlueprintCallable, Category = Camera)
-	ECameraMode GetCameraMode() const {
+		ECameraMode GetCameraMode() const {
 		if (PlayerCameraManager != nullptr) {
 			AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
 			if (camManRef != nullptr) {
@@ -143,15 +177,48 @@ public:
 		return ECameraMode::None;
 	};
 	UFUNCTION(BlueprintCallable, Category = Status)
-	bool GetIsAlive() {
+		bool GetIsAlive() {
 		return bIsAlive;
 	}
 	// sets Alive status
-	// only works on authority
+	// requires authority
 	UFUNCTION(BlueprintCallable, Category = Status)
 		void SetIsAlive(bool InStatus) {
 		if (Role == ROLE_Authority) {
 			bIsAlive = InStatus;
 		}
+	}
+	// requires authority
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		void SetLockoutDeathNSpawning(bool InStatus) {
+		if (Role == ROLE_Authority) {
+			bLockoutDeathNSpawning = InStatus;
+		}
+	}
+	// requires authority
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		void SetIsImmortal(bool InStatus) {
+		if (Role == ROLE_Authority) {
+			bIsImmortal = InStatus;
+		}
+	}
+	// requires authority
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		void SetCanSpawn(bool InStatus) {
+		if (Role == ROLE_Authority) {
+			bCanSpawn = InStatus;
+		}
+	}
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		bool GetLockoutDeathNSpawning() {
+		return bLockoutDeathNSpawning;
+	}
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		bool GetIsImmortal() {
+		return bIsImmortal;
+	}
+	UFUNCTION(BlueprintCallable, Category = Spawn)
+		bool GetCanSpawn() {
+		return bCanSpawn;
 	}
 };
