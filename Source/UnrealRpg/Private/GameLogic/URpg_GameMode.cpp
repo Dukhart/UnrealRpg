@@ -289,8 +289,15 @@ TArray<APlayerStart*> AURpg_GameMode::GetAllPlayerStarts() {
 
 // * PLAYER SPAWNING / KILLING * //
 // Kill Input player pawn
-void AURpg_GameMode::KillPlayer_Implementation(AURpg_PlayerController* InPlayer) {
-
+void AURpg_GameMode::KillPlayer_Implementation(AURpg_PlayerController* InPlayer, bool bOverrideIsImmortal) {
+	if ((Role == ROLE_Authority && InPlayer != nullptr && InPlayer->GetIsAlive() == true) && (bOverrideIsImmortal == true || InPlayer->GetIsImmortal() == false)) {
+		if (InPlayer->GetPawn() != nullptr && GetWorld() != nullptr) {
+			GetWorld()->DestroyActor(InPlayer->GetPawn());
+			InPlayer->SetIsAlive(false);
+			InPlayer->SetCanSpawn(true);
+			InPlayer->SetLockoutDeathNSpawning(false);
+		}
+	}
 }
 /*
 bool AURpg_GameMode::KillPlayer_Validate(AURpg_PlayerController* InPlayer) {
@@ -299,7 +306,40 @@ bool AURpg_GameMode::KillPlayer_Validate(AURpg_PlayerController* InPlayer) {
 */
 // Respawn player
 void AURpg_GameMode::RespawnPlayer_Implementation(AURpg_PlayerController* InPlayer) {
+	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Init Spawn");
+	if (Role == ROLE_Authority && InPlayer != nullptr && InPlayer->GetIsAlive() == false && InPlayer->GetCanSpawn() == true && GetWorld() != nullptr) {
+		GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Spawn Valid");
+		// transform for spawn location and rotation
+		FTransform spawnTransform = FindPlayerStart(InPlayer)->GetTransform();
+		spawnTransform.SetScale3D(FVector(1, 1, 1));
+		// spawn params
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = InPlayer;
+		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		// ref to hold our character
+		AURpg_PlayerCharacter* newCharRef = nullptr;
+		//check that the assigned character class is valid
+		if (InPlayer->GetCharacterClass()->IsChildOf(AURpg_PlayerCharacter::StaticClass())) {
+			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Spawn class valid");
+			newCharRef = GetWorld()->SpawnActor<AURpg_PlayerCharacter>(InPlayer->GetCharacterClass(), spawnTransform, spawnParams);
+		}
+		else if (DefaultPawnClass->IsChildOf(AURpg_PlayerCharacter::StaticClass())){
+			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Default class valid");
+			newCharRef = GetWorld()->SpawnActor<AURpg_PlayerCharacter>(DefaultPawnClass, spawnTransform, spawnParams);
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "no valid class");
+		}
+		if (newCharRef != nullptr) {
+			InPlayer->Possess(newCharRef);
 
+			InPlayer->RunRespawnEvents();
+
+			InPlayer->SetIsAlive(true);
+			InPlayer->SetCanSpawn(false);
+			InPlayer->SetLockoutDeathNSpawning(false);
+		}
+	}
 }
 /*
 bool AURpg_GameMode::RespawnPlayer_Validate(AURpg_PlayerController* InPlayer) {

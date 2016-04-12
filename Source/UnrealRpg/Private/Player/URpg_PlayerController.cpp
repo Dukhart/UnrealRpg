@@ -444,7 +444,7 @@ void AURpg_PlayerController::SERVER_KillPlayer_Implementation(bool bOverrideImmo
 			if (gm != nullptr) {
 				// lockout spawn and kill options untill operation is complete
 				SetLockoutDeathNSpawning(true);
-				gm->KillPlayer(this);
+				gm->KillPlayer(this, bOverrideImmortality);
 			}
 		}
 	}

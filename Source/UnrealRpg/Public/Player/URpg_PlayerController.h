@@ -33,9 +33,9 @@ protected:
 	virtual void BeginPlay() override;
 	// Binds user inpur to functions
 	virtual void SetupInputComponent() override;
+public:
 	// called when our controller possess a new pawn
 	virtual void Possess(APawn* InPawn) override;
-public:
 	UFUNCTION(Client, Reliable)
 		void CLIENT_RunPostLogin();
 	void CLIENT_RunPostLogin_Implementation();
@@ -220,5 +220,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Spawn)
 		bool GetCanSpawn() {
 		return bCanSpawn;
+	}
+
+	TSubclassOf<AURpg_PlayerCharacter> GetCharacterClass() {
+		return CharacterClass;
 	}
 };
