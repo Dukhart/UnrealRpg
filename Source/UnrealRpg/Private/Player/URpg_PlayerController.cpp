@@ -165,12 +165,20 @@ void AURpg_PlayerController::RunRespawnEvents_Implementation() {
 // Detect Character Movement Input on the X axis (Left / Right)
 void AURpg_PlayerController::MoveStrafe_Implementation(float value) {
 	// make sure we have a pawn
-	if (GetPawn() != nullptr)
+	if (GetPawn() != nullptr && GetPawn()->GetMovementComponent() != nullptr)
 	{
+		
+		UURpg_CharacterMovementComponent* MoveCompRef = Cast<UURpg_CharacterMovementComponent>(GetPawn()->GetMovementComponent());
+		if (MoveCompRef == nullptr) {
+		return;
+		}
+		
 		// vars to hold move params
 		FRotator RotationControlSpace;
 		FRotator YawRotation;
 		FVector Direction;
+
+		
 		/*
 		if (value != 0) {
 			GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "Strafe");
@@ -182,7 +190,6 @@ void AURpg_PlayerController::MoveStrafe_Implementation(float value) {
 		}
 
 		// move will be based off the controller
-
 		RotationControlSpace = GetControlRotation();
 		YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
 		Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
@@ -227,13 +234,7 @@ void AURpg_PlayerController::MoveStrafe_Implementation(float value) {
 
 			// if the input was not zero update the pawns rotation
 			if (value != 0) {
-				GetPawn()->SetActorRotation(YawRotation);
-
-				//FRotator rot = Cast<ACharacter>(GetPawn())->GetCharacterMovement()->ComputeOrientToMovementRotation(GetPawn()->GetActorRotation(), GetWorld()->DeltaTimeSeconds, YawRotation);
-
-				//GetPawn()->AddActorWorldRotation(rot - GetPawn()->GetActorRotation());
-
-				//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "OS");
+				MoveCompRef->SetRotation(YawRotation);
 			}
 			// broadcast the move
 			Move_Strafe.Broadcast(Direction, value);
@@ -266,8 +267,12 @@ void AURpg_PlayerController::MoveStrafe_Implementation(float value) {
 // Detect Character Movement Input on the Y axis (Forward / Back)
 void AURpg_PlayerController::MoveForwardBack_Implementation(float value) {
 	// make sure we have a pawn
-	if (GetPawn() != nullptr)
+	if (GetPawn() != nullptr && GetPawn()->GetMovementComponent() != nullptr)
 	{
+		UURpg_CharacterMovementComponent* MoveCompRef = Cast<UURpg_CharacterMovementComponent>(GetPawn()->GetMovementComponent());
+		if (MoveCompRef == nullptr) {
+			return;
+		}
 		// vars to hold move params
 		FRotator RotationControlSpace;
 		FRotator YawRotation;
@@ -321,15 +326,7 @@ void AURpg_PlayerController::MoveForwardBack_Implementation(float value) {
 
 			// if the input was not zero update the pawns rotation
 			if (value != 0) {
-				GetPawn()->SetActorRotation(YawRotation);
-
-				//FRotator rot = Cast<ACharacter>(GetPawn())->GetCharacterMovement()->ComputeOrientToMovementRotation(GetPawn()->GetActorRotation(), GetWorld()->DeltaTimeSeconds, YawRotation);
-
-				//GetPawn()->SetActorRotation(rot);
-				//GetPawn()->AddActorWorldRotation(rot - GetPawn()->GetActorRotation());
-
-				//Cast<ACharacter>(GetPawn())->GetCharacterMovement()->Rot
-				//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, GetPawn()->GetName() + " FB:: Over Shoulder ");
+				MoveCompRef->SetRotation(YawRotation);
 			}
 			// Broadcast the move
 			Move_ForwardBack.Broadcast(Direction, value);

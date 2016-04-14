@@ -4,6 +4,8 @@
 
 #include "URpg_PlayerCameraManager.h"
 
+#include "URpg_CharacterMovementComponent.h"
+
 #include "URpg_PlayerCharacter.generated.h"
 
 UCLASS()
@@ -19,8 +21,11 @@ private:
 	// Follow camera 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* PlayerCamera;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UURpg_CharacterMovementComponent* MovementCompRef;
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	ECameraMode eCurrentCameraMode;
+
 
 protected:
 	// * INTITIALIZATION * //
@@ -38,6 +43,9 @@ protected:
 	void CLIENT_BindInputDelegates_Implementation();
 
 public:
+	// returns the movement component
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
+
 	// runs when a player first logs in
 	UFUNCTION(BlueprintNativeEvent, Category = Spawn)
 	void RunPostLoginEvents();

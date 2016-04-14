@@ -181,28 +181,28 @@ public:
 		return bIsAlive;
 	}
 	// sets Alive status
-	// requires authority
+	// requires authority should automaticly be replicated to client
 	UFUNCTION(BlueprintCallable, Category = Status)
 		void SetIsAlive(bool InStatus) {
 		if (Role == ROLE_Authority) {
 			bIsAlive = InStatus;
 		}
 	}
-	// requires authority
+	// requires authority should automaticly be replicated to client
 	UFUNCTION(BlueprintCallable, Category = Spawn)
 		void SetLockoutDeathNSpawning(bool InStatus) {
 		if (Role == ROLE_Authority) {
 			bLockoutDeathNSpawning = InStatus;
 		}
 	}
-	// requires authority
+	// requires authority should automaticly be replicated to client
 	UFUNCTION(BlueprintCallable, Category = Spawn)
 		void SetIsImmortal(bool InStatus) {
 		if (Role == ROLE_Authority) {
 			bIsImmortal = InStatus;
 		}
 	}
-	// requires authority
+	// requires authority should automaticly be replicated to client
 	UFUNCTION(BlueprintCallable, Category = Spawn)
 		void SetCanSpawn(bool InStatus) {
 		if (Role == ROLE_Authority) {
