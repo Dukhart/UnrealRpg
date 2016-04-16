@@ -2,9 +2,19 @@
 
 #pragma once
 
+// Needed to use our custom camera manager
 #include "URpg_PlayerCameraManager.h"
-
+// Needed to use our custom movement component
 #include "URpg_CharacterMovementComponent.h"
+// UI //
+// Needed to add UI widgets
+#include "Runtime/UMG/Public/Components/WidgetComponent.h"
+// includes for our custom widgets
+#include "URpg_StatBar_UserWidget.h"
+
+// STATS and ATTRIBUTES //
+#include "URpg_Stat_Struct.h"
+
 
 #include "URpg_PlayerCharacter.generated.h"
 
