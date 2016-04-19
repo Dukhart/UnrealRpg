@@ -56,8 +56,42 @@ AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectIni
 	//bUseControllerRotationYaw = false;
 	//bUseControllerRotationRoll = false;
 	//GetCharacterMovement()->bOrientRotationToMovement = false;
-
 	MovementCompRef = Cast<UURpg_CharacterMovementComponent>(Super::GetMovementComponent());
+
+	// * STATS * //
+	// Add Main Stats
+	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Health));
+	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Stamina));
+	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Mana));
+	// Add Survival Stats
+	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Hunger));
+	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Thirst));
+	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Warmth));
+	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Rest));
+	// Add emotional stats
+	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Happiness));
+	// * ATTRIBUTES * //
+	// Add core Attributes
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Strength));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Dexterity));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Constitution));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Intelligence));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Wisdom));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Charisma));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Luck));
+
+	// * UI HUD Widget * //
+	// create the component
+	//HUDComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HUDComponent"));
+	// attach to the root
+	//HUDComp->AttachTo(RootComponent);
+	// Set default Draw Size
+	//if (GEngine && GEngine->GameViewport) {
+	//GEngine->GameViewport->Viewport->GetSizeXY();
+	//CoreStatComp->SetDrawSize(GEngine->GameViewport->Viewport->GetSizeXY());
+	//}
+	// Set default Location
+	
 }
 
 // set replicated properties and their conditions
@@ -66,6 +100,8 @@ void AURpg_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	// initialize replication params
 	DOREPLIFETIME(AURpg_PlayerCharacter, eCurrentCameraMode);
+	DOREPLIFETIME(AURpg_PlayerCharacter, Stats);
+	DOREPLIFETIME(AURpg_PlayerCharacter, Attributes);
 }
 
 // called after the constructor

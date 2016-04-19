@@ -26,6 +26,8 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Update")
 		void UpdateWidget();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Update")
+		void BuildDefaults();
 	
 	
 };

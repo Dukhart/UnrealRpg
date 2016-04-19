@@ -9,12 +9,11 @@
 // UI //
 // Needed to add UI widgets
 #include "Runtime/UMG/Public/Components/WidgetComponent.h"
-// includes for our custom widgets
-#include "URpg_StatBar_UserWidget.h"
+
 
 // STATS and ATTRIBUTES //
 #include "URpg_Stat_Struct.h"
-
+#include "URpg_Attribute_Struct.h"
 
 #include "URpg_PlayerCharacter.generated.h"
 
@@ -36,6 +35,13 @@ private:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	ECameraMode eCurrentCameraMode;
 
+	// * STATS * //
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = true))
+	TArray<FURpg_Stat_Struct> Stats;
+	// * ATTRIBUTES * //
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = true))
+		TArray<FURpg_Attribute_Struct> Attributes;
+	
 
 protected:
 	// * INTITIALIZATION * //

@@ -14,6 +14,7 @@ enum class EStatName : uint8 {
 	SName_Hunger UMETA(DisplayName = "Hunger"),
 	SName_Thirst UMETA(DisplayName = "Thirst"),
 	SName_Warmth UMETA(DisplayName = "Warmth"),
+	SName_Rest UMETA(DisplayName = "Rest"),
 
 	SName_Happiness UMETA(DisplayName = "Happiness"),
 

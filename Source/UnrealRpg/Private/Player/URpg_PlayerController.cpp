@@ -35,6 +35,13 @@ AURpg_PlayerController::AURpg_PlayerController(const FObjectInitializer& ObjectI
 
 	SuicideHeldTime = 0;
 	SuicideHoldTime = 1;
+
+	// * UI HUD Widget * //
+	// create the component
+	HUDComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HUDComponent"));
+	// attach to the root
+	HUDComp->AttachTo(RootComponent);
+	
 }
 // handles replicated property behavior
 void AURpg_PlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
@@ -74,10 +81,10 @@ void AURpg_PlayerController::SetupInputComponent() {
 // World and component dependent starting behavior should go here
 void AURpg_PlayerController::BeginPlay() {
 	Super::BeginPlay();
-
+	
 	if (Role == ROLE_Authority) {
 		// server players wont get a call from game mode so must run this in begin play
-		
+
 		//RunPostLoginEvents();
 		if (CharacterClass == NULL) {
 			if (GetWorld() != nullptr && GetWorld()->GetAuthGameMode() != nullptr) {
@@ -113,19 +120,35 @@ bool AURpg_PlayerController::SERVER_RunPostLogin_Validate() {
 }
 
 void AURpg_PlayerController::CLIENT_RunPostLogin_Implementation() {
-		if (GetPawn() != nullptr && PlayerCameraManager != nullptr && GetPawn()->GetController() != nullptr) {
-			//GEngine->AddOnScreenDebugMessage(11, 50, FColor::Red, "pl call");
-			SERVER_RunPostLogin();
-			AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
-			if (camManRef != nullptr) {
-				//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Init CAmera");
-				camManRef->InitDefaultCameraMode();
+	if (GetPawn() != nullptr && PlayerCameraManager != nullptr && GetPawn()->GetController() != nullptr) {
+		//GEngine->AddOnScreenDebugMessage(11, 50, FColor::Red, "pl call");
+		SERVER_RunPostLogin();
+		AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
+		if (camManRef != nullptr) {
+			//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Init CAmera");
+			camManRef->InitDefaultCameraMode();
+		}
+		// make the ui
+		AURpg_PlayerCharacter* pawnRef = Cast<AURpg_PlayerCharacter>(GetPawn());
+		if (HUDComp != nullptr && HUDComp->GetUserWidgetObject() != nullptr) {
+			// place the hud comp infront of the camera
+			HUDComp->AttachTo(pawnRef->GetPlayerCamera());
+			HUDComp->SetRelativeLocation(FVector(5, 0, 0));
+			HUDInstance = Cast<UURpg_HUD_UserWidget>(HUDComp->GetUserWidgetObject());
+			// hide the component
+			HUDComp->SetVisibility(false);
+			if (HUDInstance != nullptr) {
+				// get a ref to the components widget instance
+				HUDInstance->Owner = this;
+				// add it to the players viewport
+				HUDInstance->AddToViewport();
 			}
 		}
-		else {
-			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AURpg_PlayerController::CLIENT_RunPostLogin);
-			//GEngine->AddOnScreenDebugMessage(12, 50, FColor::Red, "pl wait");
-		}
+	}
+	else {
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AURpg_PlayerController::CLIENT_RunPostLogin);
+		//GEngine->AddOnScreenDebugMessage(12, 50, FColor::Red, "pl wait");
+	}
 }
 // handles contruction that requires the player to be fully loaded
 void AURpg_PlayerController::RunPostLoginEvents_Implementation() {
@@ -167,18 +190,18 @@ void AURpg_PlayerController::MoveStrafe_Implementation(float value) {
 	// make sure we have a pawn
 	if (GetPawn() != nullptr && GetPawn()->GetMovementComponent() != nullptr)
 	{
-		
+
 		UURpg_CharacterMovementComponent* MoveCompRef = Cast<UURpg_CharacterMovementComponent>(GetPawn()->GetMovementComponent());
 		if (MoveCompRef == nullptr) {
-		return;
+			return;
 		}
-		
+
 		// vars to hold move params
 		FRotator RotationControlSpace;
 		FRotator YawRotation;
 		FVector Direction;
 
-		
+
 		/*
 		if (value != 0) {
 			GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "Strafe");
@@ -399,7 +422,7 @@ void AURpg_PlayerController::LookRightLeft_Implementation(float value) {
 // Respawn the player if pressed when dead
 void AURpg_PlayerController::OnRespawnSuicide_Press_Implementation() {
 	if (GetWorld() != nullptr) {
-		GetWorld()->GetTimerManager().SetTimer(Suicide_TimerHandle,this, &AURpg_PlayerController::OnRespawnSuicide_Hold, 0.01f, true);
+		GetWorld()->GetTimerManager().SetTimer(Suicide_TimerHandle, this, &AURpg_PlayerController::OnRespawnSuicide_Hold, 0.01f, true);
 		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "StartTimer");
 	}
 }
@@ -416,7 +439,7 @@ void AURpg_PlayerController::OnRespawnSuicide_Release_Implementation() {
 	else {
 		SERVER_RespawnPlayer();
 	}
-	
+
 	// reset hold time
 	SuicideHeldTime = 0;
 	if (GetWorld() != nullptr) {

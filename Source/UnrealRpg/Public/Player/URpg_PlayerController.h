@@ -6,6 +6,11 @@
 #include "URpg_PlayerCameraManager.h"
 // includes for our custom classes
 #include "URpg_PlayerCharacter.h"
+// includes for our custom widgets
+#include "URpg_StatBox_UserWidget.h"
+#include "URpg_StatBar_UserWidget.h"
+#include "URpg_StatIcon_UserWidget.h"
+#include "URpg_HUD_UserWidget.h"
 
 #include "URpg_PlayerController.generated.h"
 
@@ -164,6 +169,12 @@ private:
 	UFUNCTION()
 		virtual void ActivateFreeCamera();
 
+	// Components for the UI
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|UI", meta = (AllowPrivateAccess = true))
+		UWidgetComponent* HUDComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|UI", meta = (AllowPrivateAccess = true))
+		UURpg_HUD_UserWidget* HUDInstance;
+
 public:
 	// * GETTERS AND SETTERS * //
 	UFUNCTION(BlueprintCallable, Category = Camera)
@@ -225,4 +236,7 @@ public:
 	TSubclassOf<AURpg_PlayerCharacter> GetCharacterClass() {
 		return CharacterClass;
 	}
+
+	UFUNCTION(BlueprintCallable, Category = HUD)
+		UWidgetComponent* GetHUDComp() const { return HUDComp; }
 };
