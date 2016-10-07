@@ -62,6 +62,9 @@ void AURpg_PlayerCameraManager::BeginPlay() {
 void AURpg_PlayerCameraManager::InitDefaultCameraMode_Implementation() {
 	if (Cast<AURpg_PlayerController>(GetOwningPlayerController())) {
 		 //Debug helpers
+#if !UE_BUILD_SHIPPING
+		UE_LOG(DebugLog, Log, TEXT("Init Default Camera"));
+#endif // !UE_BUILD_SHIPPING
 		/*
 		const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECameraMode"), true);
 		if (EnumPtr != nullptr) {

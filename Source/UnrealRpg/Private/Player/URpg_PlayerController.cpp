@@ -38,10 +38,9 @@ AURpg_PlayerController::AURpg_PlayerController(const FObjectInitializer& ObjectI
 
 	// * UI HUD Widget * //
 	// create the component
-	HUDComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HUDComponent"));
+	//HUDComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HUDComponent"));
 	// attach to the root
-	HUDComp->AttachTo(RootComponent);
-	
+	//HUDComp->AttachTo(RootComponent);
 }
 // handles replicated property behavior
 void AURpg_PlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
@@ -74,6 +73,8 @@ void AURpg_PlayerController::SetupInputComponent() {
 		// Bind Input BUTTONS
 		InputComponent->BindAction("SuicideRespawn", IE_Pressed, this, &AURpg_PlayerController::OnRespawnSuicide_Press);
 		InputComponent->BindAction("SuicideRespawn", IE_Released, this, &AURpg_PlayerController::OnRespawnSuicide_Release);
+		InputComponent->BindAction("ToggleHUD", IE_Released, this, &AURpg_PlayerController::OnToggleHUD);
+	
 	}
 
 }
@@ -102,7 +103,13 @@ void AURpg_PlayerController::Possess(APawn* InPawn) {
 
 void AURpg_PlayerController::SERVER_RunPostLogin_Implementation() {
 	if (GetPawn() != nullptr && PlayerCameraManager != nullptr && GetPawn()->GetController() != nullptr) {
-		//GEngine->AddOnScreenDebugMessage(9, 50, FColor::Red, "server pl call");
+
+#if !UE_BUILD_SHIPPING
+		UE_LOG(DebugLog, Log, TEXT("SERVER post login call"));
+#endif // !UE_BUILD_SHIPPING
+
+
+
 		RunPostLoginEvents();
 		AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
 		if (camManRef != nullptr) {
@@ -120,30 +127,49 @@ bool AURpg_PlayerController::SERVER_RunPostLogin_Validate() {
 }
 
 void AURpg_PlayerController::CLIENT_RunPostLogin_Implementation() {
-	if (GetPawn() != nullptr && PlayerCameraManager != nullptr && GetPawn()->GetController() != nullptr) {
-		//GEngine->AddOnScreenDebugMessage(11, 50, FColor::Red, "pl call");
+	if (GetPawn() != nullptr && PlayerCameraManager != nullptr && GetPawn()->GetController() != nullptr && GetGameInstance() != nullptr) {
+
+#if !UE_BUILD_SHIPPING
+		UE_LOG(DebugLog, Log, TEXT("CLIENT post login call"));
+#endif // !UE_BUILD_SHIPPING
+
 		SERVER_RunPostLogin();
+
 		AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
 		if (camManRef != nullptr) {
-			//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Init CAmera");
+
+#if !UE_BUILD_SHIPPING
+			UE_LOG(DebugLog, Log, TEXT("Init Camera"));
+#endif // !UE_BUILD_SHIPPING
+
 			camManRef->InitDefaultCameraMode();
 		}
 		// make the ui
-		AURpg_PlayerCharacter* pawnRef = Cast<AURpg_PlayerCharacter>(GetPawn());
-		if (HUDComp != nullptr && HUDComp->GetUserWidgetObject() != nullptr) {
-			// place the hud comp infront of the camera
-			HUDComp->AttachTo(pawnRef->GetPlayerCamera());
-			HUDComp->SetRelativeLocation(FVector(5, 0, 0));
-			HUDInstance = Cast<UURpg_HUD_UserWidget>(HUDComp->GetUserWidgetObject());
-			// hide the component
-			HUDComp->SetVisibility(false);
-			if (HUDInstance != nullptr) {
-				// get a ref to the components widget instance
-				HUDInstance->Owner = this;
-				// add it to the players viewport
-				HUDInstance->AddToViewport();
+		if (HUDTemplate->IsChildOf(UURpg_HUD_UserWidget::StaticClass())) {
+			// get a ref to the game instance
+			UURpg_GameInstance* GI = Cast<UURpg_GameInstance>(GetGameInstance());
+			// check we have a ref to the game instance
+			if (GI != nullptr) {
+				// create the widget and store a ref to the widget instance
+				HUDInstance = CreateWidget<UURpg_HUD_UserWidget>(GI, HUDTemplate);
+				if (HUDInstance != nullptr) {
+					// set the controller to the widgets owner
+					HUDInstance->Owner = this;
+					// build default starting vals
+					HUDInstance->BuildDefaults();
+					// update the widget
+					HUDInstance->UpdateWidget();
+					// add it to the players viewport
+					HUDInstance->AddToViewport();
+				}
 			}
 		}
+#if !UE_BUILD_SHIPPING
+		else {
+			UE_LOG(DebugLog, Error, TEXT("Invalid HUD Class Set check HUD Template in player controller for valid class.\nMust inherit from *UURpg_HUD_UserWidget*"));
+		}
+#endif // !UE_BUILD_SHIPPING
+		
 	}
 	else {
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AURpg_PlayerController::CLIENT_RunPostLogin);
@@ -159,6 +185,8 @@ void AURpg_PlayerController::RunPostLoginEvents_Implementation() {
 		if (charRef != nullptr) {
 			// tell the bound character to run post login events
 			charRef->RunPostLoginEvents();
+
+			charRef->SetCharacterType(ECharacterType::Player);
 		}
 		/*
 		AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
@@ -238,11 +266,6 @@ void AURpg_PlayerController::MoveStrafe_Implementation(float value) {
 			YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-			/*
-			if (value != 0) {
-				GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "FPS");
-			}
-			*/
 			// if the input was not zero update the pawns rotation
 			GetPawn()->SetActorRotation(YawRotation);
 
@@ -259,6 +282,7 @@ void AURpg_PlayerController::MoveStrafe_Implementation(float value) {
 			if (value != 0) {
 				MoveCompRef->SetRotation(YawRotation);
 			}
+
 			// broadcast the move
 			Move_Strafe.Broadcast(Direction, value);
 			break;
@@ -267,12 +291,7 @@ void AURpg_PlayerController::MoveStrafe_Implementation(float value) {
 			RotationControlSpace = GetControlRotation();
 			YawRotation = FRotator(0, RotationControlSpace.Yaw, 0);
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			/*
-			if (value != 0)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "FR");
-			}
-			*/
+
 			// broadcast the move
 			Move_Strafe.Broadcast(Direction, value);
 			break;
@@ -423,7 +442,11 @@ void AURpg_PlayerController::LookRightLeft_Implementation(float value) {
 void AURpg_PlayerController::OnRespawnSuicide_Press_Implementation() {
 	if (GetWorld() != nullptr) {
 		GetWorld()->GetTimerManager().SetTimer(Suicide_TimerHandle, this, &AURpg_PlayerController::OnRespawnSuicide_Hold, 0.01f, true);
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "StartTimer");
+
+#if !UE_BUILD_SHIPPING
+		UE_LOG(GeneralLog, Log, TEXT("Start Suicide Timer"));
+#endif // !UE_BUILD_SHIPPING
+
 	}
 }
 void AURpg_PlayerController::OnRespawnSuicide_Release_Implementation() {
@@ -445,7 +468,11 @@ void AURpg_PlayerController::OnRespawnSuicide_Release_Implementation() {
 	if (GetWorld() != nullptr) {
 		// clear the timer
 		GetWorld()->GetTimerManager().ClearTimer(Suicide_TimerHandle);
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "StopTimer");
+
+#if !UE_BUILD_SHIPPING
+		UE_LOG(GeneralLog, Log, TEXT("Stop Suicide Timer"));
+#endif // !UE_BUILD_SHIPPING
+
 	}
 }
 void AURpg_PlayerController::OnRespawnSuicide_Hold_Implementation() {
@@ -453,7 +480,9 @@ void AURpg_PlayerController::OnRespawnSuicide_Hold_Implementation() {
 	if (GetWorld() != nullptr) {
 		SuicideHeldTime += GetWorld()->GetTimerManager().GetTimerRate(Suicide_TimerHandle);
 	}
+#if !UE_BUILD_SHIPPING
 	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::SanitizeFloat(SuicideHeldTime));
+#endif // !UE_BUILD_SHIPPING
 }
 // * REQUEST TO SERVER * //
 // request the server to kill the player
@@ -462,7 +491,7 @@ void AURpg_PlayerController::SERVER_KillPlayer_Implementation(bool bOverrideImmo
 		if (GetWorld() != nullptr || GetWorld()->GetAuthGameMode() != nullptr) {
 			AURpg_GameMode* gm = Cast<AURpg_GameMode>(GetWorld()->GetAuthGameMode());
 			if (gm != nullptr) {
-				// lockout spawn and kill options untill operation is complete
+				// lockout spawn and kill options until operation is complete
 				SetLockoutDeathNSpawning(true);
 				gm->KillPlayer(this, bOverrideImmortality);
 			}
@@ -492,6 +521,22 @@ bool AURpg_PlayerController::SERVER_RespawnPlayer_Validate() {
 // * CAMERA * //
 // Switch between Controller/Camera styles
 void AURpg_PlayerController::ActivateCameraMode(ECameraMode newCameraMode, bool bForceActivate) {
+	
+	
+#if !UE_BUILD_SHIPPING
+	// print the camera mode being activated to the log
+	// try to get the enum as a UEnum
+	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECameraMode"), true);
+	if (EnumPtr != nullptr) {
+		// print to the log by name if we have th UEnum
+		UE_LOG(InitLog, Log, TEXT("Activating Camera Mode: %s"), *EnumPtr->GetNameByIndex(static_cast<uint8>(newCameraMode)).ToString());
+	}
+	else {
+		// else print to the log by index
+		UE_LOG(InitLog, Log, TEXT("Activating Camera Mode: %s"), *FString::SanitizeFloat(static_cast<uint8>(newCameraMode)));
+	}
+#endif // !UE_BUILD_SHIPPING
+
 	AURpg_PlayerCameraManager* camManRef = Cast<AURpg_PlayerCameraManager>(PlayerCameraManager);
 	// if the new camera mode is the same as our new camera mode return
 	if (camManRef == nullptr || (newCameraMode == camManRef->GetCameraMode() && !bForceActivate)) {
@@ -514,9 +559,11 @@ void AURpg_PlayerController::ActivateCameraMode(ECameraMode newCameraMode, bool 
 		ActivateFreeCamera();
 		break;
 	default:
+
 #if !UE_BUILD_SHIPPING
-		UE_LOG(GeneralLog, Warning, TEXT("Invalid Camera mode input: Activating backup FreeRangeMode"))
+		UE_LOG(DebugLog, Warning, TEXT("Invalid Camera mode input: Activating backup FreeRangeMode"))
 #endif // !UE_BUILD_SHIPPING
+
 			ActivateFreeRangeCamera();
 		break;
 	}
@@ -535,7 +582,7 @@ bool AURpg_PlayerController::AttachCameraToOwnedCharacter() {
 			characterRef->GetPlayerCamera()->DetachFromParent();
 
 #if !UE_BUILD_SHIPPING
-			UE_LOG(DebugLog, Log, TEXT("ATTACHING Camera to player pawn's Camera boom"));
+			UE_LOG(InitLog, Log, TEXT("ATTACHING Camera to player pawn's Camera boom"));
 #endif // !UE_BUILD_SHIPPING
 
 			// attach the camera to the Player
@@ -553,6 +600,7 @@ void AURpg_PlayerController::ActivateFirstPersonCamera() {
 #if !UE_BUILD_SHIPPING
 	UE_LOG(InitLog, Log, TEXT("ACTIVATING FirstPerson CameraMode"));
 #endif // !UE_BUILD_SHIPPING
+
 	Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::FirstPerson);
 	if (GetCharacter() != nullptr) {
 		// get a refrence to the player character
@@ -579,7 +627,7 @@ void AURpg_PlayerController::ActivateOverShoulderCamera() {
 #if !UE_BUILD_SHIPPING
 	UE_LOG(InitLog, Log, TEXT("ACTIVATING OverTheShoulder CameraMode"));
 #endif // !UE_BUILD_SHIPPING
-	//GEngine->AddOnScreenDebugMessage(-1, 19, FColor::Red, "os settings");
+
 	Cast<AURpg_PlayerCameraManager>(PlayerCameraManager)->SetCameraMode(ECameraMode::OverShoulder);
 	if (GetCharacter() != nullptr) {
 		//GEngine->AddOnScreenDebugMessage(-1, 19, FColor::Red, "os settings2");
@@ -662,5 +710,19 @@ void AURpg_PlayerController::ActivateFreeCamera() {
 		//characterRef->bUseControllerRotationPitch = false;
 		//characterRef->bUseControllerRotationYaw = false;
 		//characterRef->bUseControllerRotationRoll = false;
+	}
+}
+// Toggles the entire HUD to be Visible or Hidden Deppending on current state
+void AURpg_PlayerController::OnToggleHUD() {
+	if (HUDInstance != nullptr) {
+		// if visible
+		if (HUDInstance->IsVisible()) {
+			// Hide the HUD
+			HUDInstance->SetVisibility(ESlateVisibility::Hidden);
+		}
+		else {
+			// else make the HUD visible
+			HUDInstance->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 }

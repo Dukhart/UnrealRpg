@@ -1,4 +1,4 @@
-// Copyright Jordan Duncan 2015 \\ Description=RPG Template
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #ifndef __UNREALRPG_H__
 #define __UNREALRPG_H__

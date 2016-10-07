@@ -7,16 +7,16 @@
 
 UENUM(BlueprintType)
 enum class EAttributeName : uint8 {
-	AName_Strength UMETA(DisplayName = "Strength"),
-	AName_Constitution UMETA(DisplayName = "Constitution"),
-	AName_Dexterity UMETA(DisplayName = "Dexterity"),
-	AName_Intelligence UMETA(DisplayName = "Intelligence"),
-	AName_Wisdom UMETA(DisplayName = "Wisdom"),
-	AName_Charisma UMETA(DisplayName = "Charisma"),
-	AName_Luck UMETA(DisplayName = "Luck"),
+	Strength UMETA(DisplayName = "Strength"),
+	Constitution UMETA(DisplayName = "Constitution"),
+	Dexterity UMETA(DisplayName = "Dexterity"),
+	Intelligence UMETA(DisplayName = "Intelligence"),
+	Wisdom UMETA(DisplayName = "Wisdom"),
+	Charisma UMETA(DisplayName = "Charisma"),
+	Luck UMETA(DisplayName = "Luck"),
 
 
-	AName_None UMETA(DisplayName = "None")
+	None UMETA(DisplayName = "None")
 };
 
 /* Struct hold Attribute values
@@ -39,6 +39,9 @@ public:
 	// Current Value for the Attribute
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
 		float Value;
+	// Current Buff Debuff for the Attribute
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats")
+		float BuffValue;
 
 	// min allowed value for the Attribute
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
@@ -47,7 +50,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
 		int32 MaxValue;
 
-	FURpg_Attribute_Struct(EAttributeName InName = EAttributeName::AName_None, float InStartValue = 8, int32 InMin = 0, int32 InMax = 30) {
+	FURpg_Attribute_Struct(EAttributeName InName = EAttributeName::None, float InStartValue = 8, int32 InMin = 0, int32 InMax = 30) {
 		AtriName = InName;
 		AtriIndex = uint8(InName);
 
@@ -63,6 +66,8 @@ public:
 		else {
 			Value = InStartValue;
 		}
+
+		BuffValue = 0;
 		
 	}
 

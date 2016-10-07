@@ -140,7 +140,9 @@ protected:
 	UFUNCTION(Server, Reliable, WithValidation)
 		void SERVER_RespawnPlayer();
 
-
+	// * HUD * //
+	UFUNCTION(BlueprintCallable, Category = HUD)
+	void OnToggleHUD();
 
 public:
 	// * CAMERA * //
@@ -169,12 +171,13 @@ private:
 	UFUNCTION()
 		virtual void ActivateFreeCamera();
 
-	// Components for the UI
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|UI", meta = (AllowPrivateAccess = true))
-		UWidgetComponent* HUDComp;
+	// * HUD * //
+	// stored refrence to the HUD instance
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|UI", meta = (AllowPrivateAccess = true))
 		UURpg_HUD_UserWidget* HUDInstance;
-
+	// template to use when creating the HUD
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components|UI", meta = (AllowPrivateAccess = true))
+		TSubclassOf<UURpg_HUD_UserWidget> HUDTemplate;
 public:
 	// * GETTERS AND SETTERS * //
 	UFUNCTION(BlueprintCallable, Category = Camera)
@@ -238,5 +241,5 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = HUD)
-		UWidgetComponent* GetHUDComp() const { return HUDComp; }
+		UURpg_HUD_UserWidget* GetHUDInstance() const { return HUDInstance; }
 };

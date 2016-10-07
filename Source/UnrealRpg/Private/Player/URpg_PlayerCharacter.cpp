@@ -9,15 +9,20 @@
 #include "Net/UnrealNetwork.h"
 
 // * INTITIALIZATION * //
-// constructor .SetDefaultSubobjectClass<UVictoryCharMoveComp>(ACharacter::CharacterMovementComponentName)
+// constructor
 // add components and set default values
 AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UURpg_CharacterMovementComponent>(ACharacter::CharacterMovementComponentName)) {
 	// get the refrence to our character Mesh asset
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshObj(*FURpg_MeshAsset_Paths::DefaultPlayerCharacterMesh);
+	
+	// Set default character type
+	CharacterType = ECharacterType::AI;
+
 	// get the refrence to our character animation asset
 	// disabled for now seems to be causing a strange bug that prevents the editor from loading if we cast to our CharacterBp from our AnimBp
 	//static ConstructorHelpers::FObjectFinder<UAnimBlueprintGeneratedClass> AnimBp(*FURpg_BpAsset_Paths::DefualtPlayerAnimationBP);
+	
 	if (MeshObj.Object && GetMesh() != NULL) {
 		// Set the new Mesh
 		GetMesh()->SetSkeletalMesh(MeshObj.Object);
@@ -52,46 +57,37 @@ AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectIni
 	PlayerCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName);
 	// Camera does not rotate relative to arm
 	PlayerCamera->bUsePawnControlRotation = false;
-	//bUseControllerRotationPitch = false;
-	//bUseControllerRotationYaw = false;
-	//bUseControllerRotationRoll = false;
-	//GetCharacterMovement()->bOrientRotationToMovement = false;
+	// store a ref to our movement component
 	MovementCompRef = Cast<UURpg_CharacterMovementComponent>(Super::GetMovementComponent());
 
+	
 	// * STATS * //
 	// Add Main Stats
-	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Health));
-	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Stamina));
-	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Mana));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Health));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Stamina));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Mana));
 	// Add Survival Stats
-	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Hunger));
-	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Thirst));
-	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Warmth));
-	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Rest));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Hunger));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Thirst));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Warmth));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Rest));
 	// Add emotional stats
-	Stats.Add(FURpg_Stat_Struct(EStatName::SName_Happiness));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Happiness));
 	// * ATTRIBUTES * //
 	// Add core Attributes
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Strength));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Dexterity));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Constitution));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Intelligence));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Wisdom));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Charisma));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::AName_Luck));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Strength));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Dexterity));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Constitution));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Intelligence));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Wisdom));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Charisma));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Luck));
+	
 
 	// * UI HUD Widget * //
-	// create the component
-	//HUDComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HUDComponent"));
-	// attach to the root
-	//HUDComp->AttachTo(RootComponent);
-	// Set default Draw Size
-	//if (GEngine && GEngine->GameViewport) {
-	//GEngine->GameViewport->Viewport->GetSizeXY();
-	//CoreStatComp->SetDrawSize(GEngine->GameViewport->Viewport->GetSizeXY());
-	//}
-	// Set default Location
-	
+	StatusWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("StatusWidgetComponent"));
+	StatusWidgetComp->AttachTo(RootComponent);
+
 }
 
 // set replicated properties and their conditions
@@ -100,29 +96,21 @@ void AURpg_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	// initialize replication params
 	DOREPLIFETIME(AURpg_PlayerCharacter, eCurrentCameraMode);
-	DOREPLIFETIME(AURpg_PlayerCharacter, Stats);
-	DOREPLIFETIME(AURpg_PlayerCharacter, Attributes);
 }
 
 // called after the constructor
-// world and component dependent starting behavior should go here
 void AURpg_PlayerCharacter::BeginPlay() {
 	Super::BeginPlay();
-	// get our controller
-	//AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
-
 }
 // runs when a player first logs in
 void AURpg_PlayerCharacter::RunPostLoginEvents_Implementation() {
 	// tell the client to bind inputs
-	//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "local");
 	CLIENT_BindInputDelegates();
 	// get our controller
 	if (GetController() != nullptr) {
 		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
 		if (ControlRef != nullptr) {
 			// set is Alive to true
-			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Set Is Alive TRUE");
 			ControlRef->SetIsAlive(true);
 		}
 	}
@@ -136,7 +124,6 @@ void AURpg_PlayerCharacter::RunRespawnEvents_Implementation() {
 		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
 		if (ControlRef != nullptr) {
 			// set is Alive to true
-			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Set Is Alive TRUE");
 			ControlRef->SetIsAlive(true);
 		}
 	}
@@ -144,14 +131,19 @@ void AURpg_PlayerCharacter::RunRespawnEvents_Implementation() {
 
 // binds client input from the controller to the characters movement
 void AURpg_PlayerCharacter::CLIENT_BindInputDelegates_Implementation() {
-	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "starts Binding Delegates");
+//	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "starts Binding Delegates");
 	if (GetController() != nullptr) {
 		// get the InPawn as a URpg_Character
 		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
-		GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "has controller Binding Delegates");
+	//	GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "has controller Binding Delegates");
 		// check the cast was successfull
 		if (ControlRef != nullptr) {
-			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Blue, "Binding Delegates");
+
+#if UE_BUILD_SHIPPING
+			UE_LOG(InitLog, Log, TEXT("%s Binding Delegates"), *GetName());
+#endif // UE_BUILD_SHIPPING
+
+			
 			// Bind Character movement methods to our delegates
 			ControlRef->Move_Strafe.AddDynamic(this, &AURpg_PlayerCharacter::DoMoveStrafe);
 			ControlRef->Move_ForwardBack.AddDynamic(this, &AURpg_PlayerCharacter::DoMoveForwardBack);
@@ -168,19 +160,6 @@ UPawnMovementComponent* AURpg_PlayerCharacter::GetMovementComponent() const {
 // * DESTRUCTION * //
 // extra end play behavior
 void AURpg_PlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
-	//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "END PLAY");
-	// get our controller
-	/*
-	if (GetController() != nullptr) {
-		GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Has Controller");
-		AURpg_PlayerController* ControlRef = Cast<AURpg_PlayerController>(GetController());
-		if (ControlRef != nullptr) {
-			GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red, "Set Is Alive FALSE");
-			// set is Alive to true
-			ControlRef->SetIsAlive(false);
-		}
-	}
-	*/
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -189,18 +168,24 @@ void AURpg_PlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 void AURpg_PlayerCharacter::DoMoveStrafe(const FVector& Direction, const float& value) {
 	if (GetMovementComponent() != nullptr && value != 0) {
 		GetMovementComponent()->AddInputVector(Direction * value);
+
+#if !UE_BUILD_SHIPPING
 		GEngine->AddOnScreenDebugMessage(3, 1, FColor::Red, GetName() + " Doing Strafe: " + FString::SanitizeFloat(value));
+#endif // !UE_BUILD_SHIPPING
+
 	}
-	//AddMovementInput(Direction, value);
 }
 
 // Apply Character Movement Input on the Y axis (Forward / Back)
 void AURpg_PlayerCharacter::DoMoveForwardBack(const FVector& Direction, const float& value) {
 	if (GetMovementComponent() != nullptr && value != 0) {
 		GetMovementComponent()->AddInputVector(Direction * value, true);
+
+#if !UE_BUILD_SHIPPING
 		GEngine->AddOnScreenDebugMessage(2, 1, FColor::Green, GetName() + " Doing FB: " + FString::SanitizeFloat(value));
+#endif // !UE_BUILD_SHIPPING
+
 	}
-	//AddMovementInput(Direction, value);
 }
 
 // Apply Jump Input
@@ -222,18 +207,20 @@ void AURpg_PlayerCharacter::DoLookRightLeft(float value) {
 
 }
 
+// Asks the server what the players current camera mode is
 ECameraMode AURpg_PlayerCharacter::GetPlayersCameraMode() {
 	if (Role == ROLE_AutonomousProxy)
 		SERVER_RequestPlayerCameraMode();
 
 	return eCurrentCameraMode;
 }
-
+// returns characters camera mode from the server
 void AURpg_PlayerCharacter::SERVER_RequestPlayerCameraMode_Implementation() {
-	//ECameraMode camModeRef = ECameraMode::None;
+	// get the controller
 	if (GetController() != nullptr) {
 		AURpg_PlayerController* controlRef = Cast<AURpg_PlayerController>(GetController());
 		if (controlRef != nullptr) {
+			// get the camera mode from the controller
 			eCurrentCameraMode = controlRef->GetCameraMode();
 		}
 	}
@@ -241,4 +228,6 @@ void AURpg_PlayerCharacter::SERVER_RequestPlayerCameraMode_Implementation() {
 bool AURpg_PlayerCharacter::SERVER_RequestPlayerCameraMode_Validate() {
 	return true;
 }
+
+
 

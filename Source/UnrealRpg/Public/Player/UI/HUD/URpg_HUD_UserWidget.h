@@ -20,8 +20,8 @@ class UNREALRPG_API UURpg_HUD_UserWidget : public UURpg_Base_UserWidget
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Stats)
-		void SetStatPercent(float InPercent, EStatName StatToChange);
+		void UpdateStat(EStatName StatToChange);
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Attributes)
-		void SetAttributeValue(float InValue, EAttributeName AttributeToChange);
+		void UpdateAttribute(EAttributeName AttributeToChange);
 	
 };

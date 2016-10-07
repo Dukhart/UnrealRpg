@@ -89,15 +89,19 @@ public:
 	// * PLAYER SPAWNING / KILLING * //
 	// Kill Input player pawn
 	//UFUNCTION(reliable, server, WithValidation, BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
 	void KillPlayer(AURpg_PlayerController* InPlayer, bool bOverrideIsImmortal = false);
 	void KillPlayer_Implementation(AURpg_PlayerController* InPlayer, bool bOverrideIsImmortal = false);
+	
 //	bool KillPlayer_Validate(AURpg_PlayerController* InPlayer);
 	// Respawn player
 	//UFUNCTION(reliable, server, WithValidation, BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
+	
 		UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
 		void RespawnPlayer(AURpg_PlayerController* InPlayer);
 	void RespawnPlayer_Implementation(AURpg_PlayerController* InPlayer);
+	
 //	bool RespawnPlayer_Validate(AURpg_PlayerController* InPlayer);
 
 protected:

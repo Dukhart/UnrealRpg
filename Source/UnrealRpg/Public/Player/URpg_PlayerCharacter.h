@@ -2,23 +2,25 @@
 
 #pragma once
 
-// Needed to use our custom camera manager
+// include to use our custom camera manager
 #include "URpg_PlayerCameraManager.h"
-// Needed to use our custom movement component
+// include to use our custom movement component
 #include "URpg_CharacterMovementComponent.h"
+// include the custom base character class
+#include "URpg_Character.h"
 // UI //
-// Needed to add UI widgets
+// include to add UI widgets
 #include "Runtime/UMG/Public/Components/WidgetComponent.h"
-
+#include "URpg_HUD_UserWidget.h"
 
 // STATS and ATTRIBUTES //
-#include "URpg_Stat_Struct.h"
-#include "URpg_Attribute_Struct.h"
+//#include "URpg_Stat_Struct.h"
+//#include "URpg_Attribute_Struct.h"
 
 #include "URpg_PlayerCharacter.generated.h"
 
 UCLASS()
-class UNREALRPG_API AURpg_PlayerCharacter : public ACharacter
+class UNREALRPG_API AURpg_PlayerCharacter : public AURpg_Character
 {
 	GENERATED_BODY()
 
@@ -35,12 +37,22 @@ private:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	ECameraMode eCurrentCameraMode;
 
+	/*
 	// * STATS * //
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = true))
-	TArray<FURpg_Stat_Struct> Stats;
+		TArray<FURpg_Stat_Struct> Stats;
 	// * ATTRIBUTES * //
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = true))
+		UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = true))
 		TArray<FURpg_Attribute_Struct> Attributes;
+	*/
+
+	// * UMG * //
+	// Used by other players to see current status of player if enabled
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|UI", meta = (AllowPrivateAccess = true))
+		UWidgetComponent* StatusWidgetComp;
+	// the instance of the status comp
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components|UI", meta = (AllowPrivateAccess = true))
+		UURpg_HUD_UserWidget* StatusWidgetInstance;
 	
 
 protected:
@@ -51,7 +63,6 @@ protected:
 	// set replicated properties
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// called after the constructor
-	// world and component dependent starting behavior should go here
 	virtual void BeginPlay() override;
 	// binds client input from the controller to the characters movement
 	UFUNCTION(BlueprintCallable, Client, Reliable, Category = Input)
@@ -73,6 +84,7 @@ protected:
 	// * DESTRUCTION * //
 	// extra end play behavior
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:
 	// * MOVEMENT * //
 	// Detect Character Movement Input on the X axis (Left / Right)
@@ -95,9 +107,6 @@ public:
 	UFUNCTION()
 	virtual void DoLookRightLeft(float value);
 
-	//UFUNCTION(Server, Reliable, WithValidation)
-		//void SERVER_RequestPlayerCameraMode();
-
 public:
 	// * GETTERS AND SETTERS * //
 	// Returns CameraBoom subobject
@@ -107,10 +116,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Camera)
 	class UCameraComponent* GetPlayerCamera() const { return PlayerCamera; }
 
-	// will send a request to the server to update the characters camera mode and return the new camera mode
+	// Asks the server what the players current camera mode is
 	UFUNCTION(BlueprintCallable, Category = Camera)
 	ECameraMode GetPlayersCameraMode();
-	// updates characters camera mode from the server
+	// returns characters camera mode from the server
 	// since the player controller / camera manger only exists on the server and owning client this will allow camera replication
 	// to all clients by accessing the camera state from the server
 	UFUNCTION(Server, Reliable, WithValidation)
