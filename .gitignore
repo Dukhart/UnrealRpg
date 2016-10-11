@@ -8,3 +8,6 @@ Saved
 *.suo
 *.xcodeproj
 *.xcworkspace
+.vs/config/applicationhost.config
+*.db
+UnrealRpg.VC.VC.opendb
