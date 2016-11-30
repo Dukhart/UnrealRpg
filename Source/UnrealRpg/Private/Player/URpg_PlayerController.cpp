@@ -202,6 +202,11 @@ void AURpg_PlayerController::RunRespawnEvents_Implementation() {
 	if (GetPawn() != nullptr) {
 		// Activate the Camera
 		ActivateCameraMode(GetCameraMode(), true);
+		// show the HUD
+		HUDInstance->SetVisibility(ESlateVisibility::Visible);
+		// update the HUD widgets
+		HUDInstance->UpdateWidget();
+
 		// cast the pawn to our custom player character
 		AURpg_PlayerCharacter* charRef = Cast<AURpg_PlayerCharacter>(GetPawn());
 		if (charRef != nullptr) {
@@ -210,7 +215,12 @@ void AURpg_PlayerController::RunRespawnEvents_Implementation() {
 		}
 	}
 }
-
+// * Death * //
+void AURpg_PlayerController::OnPlayerDeath() {
+	SetIsAlive(false);
+	// Hide the HUD
+	HUDInstance->SetVisibility(ESlateVisibility::Hidden);
+}
 // * INPUT * //
 // AXIS
 // Detect Character Movement Input on the X axis (Left / Right)
@@ -454,7 +464,7 @@ void AURpg_PlayerController::OnRespawnSuicide_Release_Implementation() {
 	if (bIsAlive) {
 		// check we held the button down for the required time
 		if (SuicideHeldTime >= SuicideHoldTime) {
-			// suicide request doesn't require immortality check so override immortality check on reuest to server
+			// suicide request overrides immortality so override immortality on request to server
 			SERVER_KillPlayer(true);
 		}
 	}

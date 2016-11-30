@@ -8,6 +8,7 @@
 #include "URpg_Stat_Struct.h"
 #include "URpg_Attribute_Struct.h"
 #include "URpg_PowerUpEffect_Struct.h"
+//#include "URpg_StatusEffect.h"
 
 #include "URpg_Character.generated.h"
 
@@ -28,7 +29,6 @@ enum class ECharacterType : uint8 {
 	None
 };
 
-
 UCLASS()
 class UNREALRPG_API AURpg_Character : public ACharacter
 {
@@ -47,6 +47,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
+	virtual void OnDeath();
 
 	// * STAT FUNCTIONS * //
 	UFUNCTION(BlueprintCallable, Category = "Stats")
@@ -73,7 +76,7 @@ protected:
 		ECharacterType CharacterType;
 	// The in game name of the character
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Bio")
-	FName Nickname = "Nameme";
+	FName Name = "NameMe";
 
 	// * INLINE FUNCTIONS * //
 public:
@@ -82,4 +85,7 @@ public:
 
 	TArray<FURpg_Stat_Struct> GetStats() const { return Stats; }
 	TArray<FURpg_Attribute_Struct> GetAttributes() const { return Attributes; }
+
+
+	TArray<class UURpg_StatusEffect*> ActiveStatusEffects;
 };

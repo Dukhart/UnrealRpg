@@ -3,12 +3,14 @@
 #include "UnrealRpg.h"
 #include "URpg_StatusEffect.h"
 
+#include "URpg_StatusEffect.h"
+
 
 
 // * CONSTRUCTOR * //
 UURpg_StatusEffect::UURpg_StatusEffect(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
-	
+	Name = "";
 }
 // * TICK * //
 void UURpg_StatusEffect::Tick(float DeltaTime) {
@@ -22,9 +24,9 @@ void UURpg_StatusEffect::Tick(float DeltaTime) {
 // the effect will only tick if the rate is set to zero for continuous
 bool UURpg_StatusEffect::IsTickable() const {
 	bool bTickIt = false;
-	if (Owner != nullptr && Owner->GetWorld() != nullptr) {
+	if (Target != nullptr && Target->GetWorld() != nullptr) {
 		float tickRate = Params.GetTickRate();
-		bTickIt = Owner->GetWorld()->HasBegunPlay() && (tickRate <= 0 ? true : false);
+		bTickIt = Target->GetWorld()->HasBegunPlay() && (tickRate <= 0 ? true : false);
 	}
 	return bTickIt;
 }
@@ -35,8 +37,8 @@ void UURpg_StatusEffect::RunEffect(float DeltaTime) {
 #if !UE_BUILD_SHIPPING
 	UE_LOG(DebugLog, Warning, TEXT("Status Effect is ticking"));
 #endif // !UE_BUILD_SHIPPING
-	// Check we still have valid owner
-	if (Owner != nullptr) {
+	// Check we still have valid taget
+	if (Target != nullptr && !Target->IsPendingKillOrUnreachable()) {
 		// increment ticks
 		Ticks += DeltaTime;
 #if !UE_BUILD_SHIPPING
@@ -68,7 +70,13 @@ void UURpg_StatusEffect::RunEffect(float DeltaTime) {
 					GEngine->AddOnScreenDebugMessage(40, 100, FColor::Red, "Val: " + FString::SanitizeFloat(val));
 				}
 #endif // !UE_BUILD_SHIPPING
-				Owner->AddStatValue_ByName(Params.SNames[i], val, Params.AffectedProperty);
+				if(Params.SNames[i] == EStatName::Health && Params.AffectedProperty == EAffectedProperty::Base){
+					FDamageEvent DamageEvent;
+					Target->TakeDamage(-val, DamageEvent, nullptr, nullptr);
+				}
+				else {
+					Target->AddStatValue_ByName(Params.SNames[i], val, Params.AffectedProperty);
+				}
 			}
 			for (int32 i = 0; i < Params.ANames.Num(); ++i) {
 				//	Owner->AddAttributeValue_ByName(Params.ANames[i], Params.Value, Params.AffectedProperty);
@@ -93,10 +101,13 @@ void UURpg_StatusEffect::RunEffect(float DeltaTime) {
 void UURpg_StatusEffect::Activate(AURpg_Character* TargetActor) {
 	if (bIsActive == false && TargetActor != nullptr) {
 		// Set the Owner
-		Owner = TargetActor;
+		Target = TargetActor;
 		// Get the World from the owner
-		if (Owner != nullptr) {
-			UWorld* World = Owner->GetWorld();
+		if (Target != nullptr) {
+
+			Target->ActiveStatusEffects.Add(this);
+
+			UWorld* World = Target->GetWorld();
 			if (World != nullptr) {
 				// make sure current ticks is set to 0
 				Ticks = 0;
@@ -117,8 +128,8 @@ void UURpg_StatusEffect::Activate(AURpg_Character* TargetActor) {
 
 void UURpg_StatusEffect::Pause() {
 	// Get the World from the owner
-	if (Owner != nullptr) {
-		UWorld* World = Owner->GetWorld();
+	if (Target != nullptr) {
+		UWorld* World = Target->GetWorld();
 		if (World != nullptr) {
 			if (World->GetTimerManager().IsTimerPaused(EffectTimer)) {
 				World->GetTimerManager().UnPauseTimer(EffectTimer);
@@ -132,8 +143,8 @@ void UURpg_StatusEffect::Pause() {
 
 void UURpg_StatusEffect::Reset() {
 	// Get the World from the owner
-	if (Owner != nullptr) {
-		UWorld* World = Owner->GetWorld();
+	if (Target != nullptr) {
+		UWorld* World = Target->GetWorld();
 		if (World != nullptr) {
 		}
 	}
@@ -141,8 +152,9 @@ void UURpg_StatusEffect::Reset() {
 
 void UURpg_StatusEffect::Remove() {
 	// Get the World from the owner
-	if (Owner != nullptr) {
-		UWorld* World = Owner->GetWorld();
+	if (Target != nullptr) {
+		Target->ActiveStatusEffects.Remove(this);
+		UWorld* World = Target->GetWorld();
 		if (World != nullptr) {
 			World->GetTimerManager().ClearAllTimersForObject(this);
 			GEngine->AddOnScreenDebugMessage(11, 100, FColor::Red, "CLEARTIMER");

@@ -61,27 +61,7 @@ AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectIni
 	MovementCompRef = Cast<UURpg_CharacterMovementComponent>(Super::GetMovementComponent());
 
 	
-	// * STATS * //
-	// Add Main Stats
-	Stats.Add(FURpg_Stat_Struct(EStatName::Health));
-	Stats.Add(FURpg_Stat_Struct(EStatName::Stamina));
-	Stats.Add(FURpg_Stat_Struct(EStatName::Mana));
-	// Add Survival Stats
-	Stats.Add(FURpg_Stat_Struct(EStatName::Hunger));
-	Stats.Add(FURpg_Stat_Struct(EStatName::Thirst));
-	Stats.Add(FURpg_Stat_Struct(EStatName::Warmth));
-	Stats.Add(FURpg_Stat_Struct(EStatName::Rest));
-	// Add emotional stats
-	Stats.Add(FURpg_Stat_Struct(EStatName::Happiness));
-	// * ATTRIBUTES * //
-	// Add core Attributes
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Strength));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Dexterity));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Constitution));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Intelligence));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Wisdom));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Charisma));
-	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Luck));
+	
 	
 
 	// * UI HUD Widget * //
@@ -161,6 +141,28 @@ UPawnMovementComponent* AURpg_PlayerCharacter::GetMovementComponent() const {
 // extra end play behavior
 void AURpg_PlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	Super::EndPlay(EndPlayReason);
+}
+
+// This is the actor damage handler.   
+float AURpg_PlayerCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
+{
+	// only the server should apply damage
+	if (Role == ROLE_Authority) {
+		// Call the base class - this will tell us how much damage to apply  
+		const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+		AddStatValue_ByName(EStatName::Health, -Damage);
+		if (Stats[0].GetValue() + Stats[0].GetBuff() <= Stats[0].GetMin()) {
+			// call death function to handle killing the character
+			AURpg_GameMode* gm = Cast<AURpg_GameMode>(GetWorld()->GetAuthGameMode());
+			if (gm != nullptr) {
+				// lockout spawn and kill options until operation is complete
+				gm->KillPlayer( Cast<AURpg_PlayerController>(GetController()) );
+			}
+		}
+
+		return ActualDamage;
+	}
+	return Damage;
 }
 
 // * MOVEMENT * //

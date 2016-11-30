@@ -294,10 +294,24 @@ TArray<APlayerStart*> AURpg_GameMode::GetAllPlayerStarts() {
 void AURpg_GameMode::KillPlayer_Implementation(AURpg_PlayerController* InPlayer, bool bOverrideIsImmortal) {
 	if ((Role == ROLE_Authority && InPlayer != nullptr && InPlayer->GetIsAlive() == true) && (bOverrideIsImmortal == true || InPlayer->GetIsImmortal() == false)) {
 		if (InPlayer->GetPawn() != nullptr && GetWorld() != nullptr) {
-			GetWorld()->DestroyActor(InPlayer->GetPawn());
-			InPlayer->SetIsAlive(false);
-			InPlayer->SetCanSpawn(true);
-			InPlayer->SetLockoutDeathNSpawning(false);
+			AURpg_Character* pawn = Cast<AURpg_Character>(InPlayer->GetPawn());
+			if (pawn != nullptr) {
+
+				pawn->OnDeath();
+
+				InPlayer->OnPlayerDeath();
+				InPlayer->UnPossess();
+
+				GetWorld()->DestroyActor(pawn);
+				
+				InPlayer->SetCanSpawn(true);
+				InPlayer->SetLockoutDeathNSpawning(false);
+
+			}
+			else {
+				UE_LOG(DebugLog, Error, TEXT("KILLPLAYER Target not a URpg_Character"));
+			}
+			
 		}
 	}
 }
@@ -349,3 +363,7 @@ bool AURpg_GameMode::RespawnPlayer_Validate(AURpg_PlayerController* InPlayer) {
 	return true;
 }
 */
+
+void AURpg_GameMode::KillCharacter_Implementation(AURpg_Character* InCharacter, bool bOverrideIsImmortal) {
+
+}

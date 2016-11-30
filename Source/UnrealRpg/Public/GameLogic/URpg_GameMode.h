@@ -90,9 +90,12 @@ public:
 	// Kill Input player pawn
 	//UFUNCTION(reliable, server, WithValidation, BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
 	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Kill)
 	void KillPlayer(AURpg_PlayerController* InPlayer, bool bOverrideIsImmortal = false);
 	void KillPlayer_Implementation(AURpg_PlayerController* InPlayer, bool bOverrideIsImmortal = false);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Kill)
+		void KillCharacter(AURpg_Character* InCharacter, bool bOverrideIsImmortal = false);
+	void KillCharacter_Implementation(AURpg_Character* InCharacter, bool bOverrideIsImmortal = false);
 	
 //	bool KillPlayer_Validate(AURpg_PlayerController* InPlayer);
 	// Respawn player

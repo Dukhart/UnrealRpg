@@ -21,10 +21,14 @@ protected:
 
 	UURpg_StatusEffect(const class FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Info")
-	//	FName Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Info")
+		FName Name;
+	// Character the status is ticking on
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Info")
-		AURpg_Character* Owner;
+		AURpg_Character* Target;
+	// Actor that caused the status effect
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Info")
+		AActor* Source;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Params")
 		FURpg_PowerUpEffect_Struct Params;

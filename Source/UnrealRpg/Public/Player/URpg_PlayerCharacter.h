@@ -13,10 +13,6 @@
 #include "Runtime/UMG/Public/Components/WidgetComponent.h"
 #include "URpg_HUD_UserWidget.h"
 
-// STATS and ATTRIBUTES //
-//#include "URpg_Stat_Struct.h"
-//#include "URpg_Attribute_Struct.h"
-
 #include "URpg_PlayerCharacter.generated.h"
 
 UCLASS()
@@ -36,15 +32,6 @@ private:
 	UURpg_CharacterMovementComponent* MovementCompRef;
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	ECameraMode eCurrentCameraMode;
-
-	/*
-	// * STATS * //
-	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = true))
-		TArray<FURpg_Stat_Struct> Stats;
-	// * ATTRIBUTES * //
-		UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = true))
-		TArray<FURpg_Attribute_Struct> Attributes;
-	*/
 
 	// * UMG * //
 	// Used by other players to see current status of player if enabled
@@ -79,6 +66,8 @@ public:
 	// runs whenever the character is respawned
 	UFUNCTION(BlueprintNativeEvent, Category = Spawn)
 	void RunRespawnEvents();
+
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
 
 protected:
 	// * DESTRUCTION * //

@@ -14,6 +14,29 @@ AURpg_Character::AURpg_Character(const FObjectInitializer& ObjectInitializer)
 	PrimaryActorTick.bCanEverTick = true;
 
 	CharacterType = ECharacterType::None;
+
+
+	// * STATS * //
+	// Add Main Stats
+	Stats.Add(FURpg_Stat_Struct(EStatName::Health));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Stamina));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Mana));
+	// Add Survival Stats
+	Stats.Add(FURpg_Stat_Struct(EStatName::Hunger));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Thirst));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Warmth));
+	Stats.Add(FURpg_Stat_Struct(EStatName::Rest));
+	// Add emotional stats
+	Stats.Add(FURpg_Stat_Struct(EStatName::Happiness));
+	// * ATTRIBUTES * //
+	// Add core Attributes
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Strength));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Dexterity));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Constitution));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Intelligence));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Wisdom));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Charisma));
+	Attributes.Add(FURpg_Attribute_Struct(EAttributeName::Luck));
 }
 
 void AURpg_Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -22,7 +45,7 @@ void AURpg_Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 		DOREPLIFETIME(AURpg_Character, Stats);
 		DOREPLIFETIME(AURpg_Character, Attributes);
 		DOREPLIFETIME(AURpg_Character, CharacterType);
-		DOREPLIFETIME(AURpg_Character, Nickname);
+		DOREPLIFETIME(AURpg_Character, Name);
 }
 
 // Called when the game starts or when spawned
@@ -43,6 +66,33 @@ void AURpg_Character::Tick( float DeltaTime )
 void AURpg_Character::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
+
+}
+
+// This is the actor damage handler.   
+float AURpg_Character::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
+{
+	// only the server should apply damage
+	if (Role == ROLE_Authority) {
+		// Call the base class - this will tell us how much damage to apply  
+		const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+		AddStatValue_ByName(EStatName::Health, -Damage);
+		if (Stats[0].GetValue() + Stats[0].GetBuff() <= Stats[0].GetMin()) {
+			// call death function to handle killing the character
+			AURpg_GameMode* gm = Cast<AURpg_GameMode>(GetWorld()->GetAuthGameMode());
+			if (gm != nullptr) {
+				// lockout spawn and kill options until operation is complete
+				//SetLockoutDeathNSpawning(true);
+				gm->KillCharacter(this);
+			}
+		}
+
+		return ActualDamage;
+	}
+	return Damage;
+}
+void  AURpg_Character::OnDeath() {
+
 
 }
 

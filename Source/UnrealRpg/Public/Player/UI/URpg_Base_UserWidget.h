@@ -21,8 +21,9 @@ class UNREALRPG_API UURpg_Base_UserWidget : public UUserWidget
 	
 public:
 
+	// controller that owns the User Widget
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pawn")
-		AActor* Owner;
+		AController* Owner;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Update")
 		void UpdateWidget();

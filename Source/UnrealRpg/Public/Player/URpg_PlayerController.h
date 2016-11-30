@@ -54,6 +54,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Spawn)
 		void RunRespawnEvents();
 
+	UFUNCTION()
+		void OnPlayerDeath();
+
 protected:
 	// * SETTINGS * //
 	// rate at wich the pawn will turn
@@ -121,6 +124,7 @@ protected:
 		void LookRightLeftRate(float value);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Input)
 		void LookRightLeft(float value);
+
 
 	// Suicide player if held and alive
 	// Respawn the player if pressed when dead
