@@ -46,7 +46,9 @@ AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectIni
 	// see Character Controller Activate Camera mode to adjust values
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	// attach the camera boom to our root
-	CameraBoom->AttachTo(RootComponent);
+	//CameraBoom->AttachTo(RootComponent);
+	//CameraBoom->AttachToComponent(RootComponent, UDons_StaticFunctionLibrary::StandardComponentAttachRules);
+	CameraBoom->SetupAttachment(RootComponent);
 	// The camera follows at this distance behind the character.
 	CameraBoom->TargetArmLength = 300.0f;
 	// Rotate the arm based on the controller
@@ -54,7 +56,7 @@ AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectIni
 	// Create a follow camera
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	// Attach the camera to the end of the camera boom
-	PlayerCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName);
+	PlayerCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	// Camera does not rotate relative to arm
 	PlayerCamera->bUsePawnControlRotation = false;
 	// store a ref to our movement component
@@ -66,7 +68,7 @@ AURpg_PlayerCharacter::AURpg_PlayerCharacter(const FObjectInitializer& ObjectIni
 
 	// * UI HUD Widget * //
 	StatusWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("StatusWidgetComponent"));
-	StatusWidgetComp->AttachTo(RootComponent);
+	StatusWidgetComp->SetupAttachment(RootComponent);
 
 }
 
@@ -140,6 +142,8 @@ UPawnMovementComponent* AURpg_PlayerCharacter::GetMovementComponent() const {
 // * DESTRUCTION * //
 // extra end play behavior
 void AURpg_PlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	
+
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -209,6 +213,40 @@ void AURpg_PlayerCharacter::DoLookRightLeft(float value) {
 
 }
 
+
+// add active effects
+void AURpg_PlayerCharacter::AddStatEffect(UURpg_StatusEffect* newEffect) {
+	ActiveStatusEffects.Add(newEffect);
+	// add the effect to the HUD
+	if (GetPlayerController() != nullptr) {
+		GetPlayerController()->GetHUDInstance()->AddStatusEffect(newEffect);
+	}
+}
+// remove active effect
+void AURpg_PlayerCharacter::RemoveStatEffect(UURpg_StatusEffect* targetEffect) {
+	ActiveStatusEffects.Remove(targetEffect);
+	// remove the effect to the HUD
+	if (GetPlayerController() != nullptr) {
+		GetPlayerController()->GetHUDInstance()->RemoveStatusEffect(targetEffect);
+	}
+}
+
+// * GETTERS & SETTERS * //
+
+AURpg_PlayerController* AURpg_PlayerCharacter::GetPlayerController() const {
+	// check we have a controller
+	if (GetController() != nullptr) {
+		// cast the controller to a AURpg_PlayerController
+		AURpg_PlayerController* controlRef = Cast<AURpg_PlayerController>(GetController());
+		// check the cast was succesfull
+		if (controlRef != nullptr) {
+			// retrun the controller
+			return controlRef;
+		}
+	}
+	// return a nullptr if we fail to get a player controller
+	return nullptr;
+}
 // Asks the server what the players current camera mode is
 ECameraMode AURpg_PlayerCharacter::GetPlayersCameraMode() {
 	if (Role == ROLE_AutonomousProxy)
@@ -230,6 +268,5 @@ void AURpg_PlayerCharacter::SERVER_RequestPlayerCameraMode_Implementation() {
 bool AURpg_PlayerCharacter::SERVER_RequestPlayerCameraMode_Validate() {
 	return true;
 }
-
 
 

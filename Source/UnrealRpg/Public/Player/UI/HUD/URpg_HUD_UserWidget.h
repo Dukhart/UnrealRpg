@@ -23,5 +23,8 @@ public:
 		void UpdateStat(EStatName StatToChange);
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Attributes)
 		void UpdateAttribute(EAttributeName AttributeToChange);
-	
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Feedback)
+		void AddStatusEffect(UURpg_StatusEffect* StatIn);
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Feedback)
+		void RemoveStatusEffect(UURpg_StatusEffect* StatIn);
 };

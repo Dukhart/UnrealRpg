@@ -6,7 +6,7 @@
 
 #include "URpg_PowerUpEffect_Struct.h"
 #include "URpg_Character.h"
-
+#include "URpg_StatusEffect_UserWidget.h"
 #include "URpg_StatusEffect.generated.h"
 
 /**
@@ -23,6 +23,10 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Info")
 		FName Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	UURpg_StatusEffect_UserWidget* WidgetInstance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+		TSubclassOf<UURpg_StatusEffect_UserWidget> WidgetStyle;
 	// Character the status is ticking on
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Info")
 		AURpg_Character* Target;

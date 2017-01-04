@@ -22,6 +22,9 @@ public:
 	// Constructor
 	UDons_StaticFunctionLibrary(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
+	// * Static class * //
+	static const FAttachmentTransformRules StandardComponentAttachRules;
+
 	// * ARRAY SORTING * //
 	// Sorts an array of Strings alphabetically
 	UFUNCTION(BlueprintCallable, Category = DonStatics)

@@ -74,6 +74,12 @@ protected:
 	// extra end play behavior
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	// * Stats & Attributes * //
+	// add active effects
+	void AddStatEffect(UURpg_StatusEffect* newEffect) override;
+	// remove active effect
+	void RemoveStatEffect(UURpg_StatusEffect* targetEffect) override;
+
 public:
 	// * MOVEMENT * //
 	// Detect Character Movement Input on the X axis (Left / Right)
@@ -104,7 +110,8 @@ public:
 	// Returns FollowCamera subobject
 	UFUNCTION(BlueprintCallable, Category = Camera)
 	class UCameraComponent* GetPlayerCamera() const { return PlayerCamera; }
-
+	// returns the player controller as a AURpg_PlayerController
+	class AURpg_PlayerController* GetPlayerController() const;
 	// Asks the server what the players current camera mode is
 	UFUNCTION(BlueprintCallable, Category = Camera)
 	ECameraMode GetPlayersCameraMode();

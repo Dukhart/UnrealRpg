@@ -61,31 +61,36 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 		void AddStatValue_ByIndex(uint8 statIndex, float value, EAffectedProperty prop = EAffectedProperty::Base);
 	void UpdateStatWidget(EStatName stat = EStatName::None);
-
+	// * STATS & ATTRIBUTES * //
 protected:
-	// * STATS * //
+	// array to hold the various stats
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Stats", meta = (AllowPrivateAccess = true))
 		TArray<FURpg_Stat_Struct> Stats;
-	// * ATTRIBUTES * //
+	// array to hold the various attributes
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = true))
 		TArray<FURpg_Attribute_Struct> Attributes;
-	//TArray<FTimerHandle> ActiveStatusEffects;
-
 	// Characters type
 	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category = "Bio")
 		ECharacterType CharacterType;
 	// The in game name of the character
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Bio")
 	FName Name = "NameMe";
-
-	// * INLINE FUNCTIONS * //
+	// Active Stat effects
+	TArray<class UURpg_StatusEffect*> ActiveStatusEffects;
 public:
+	// add active effects
+	virtual void AddStatEffect(UURpg_StatusEffect* newEffect);
+	// remove active effect
+	virtual void RemoveStatEffect(UURpg_StatusEffect* targetEffect);
+	
+public:
+	// * GETTERS & SETTERS * //
 	void SetCharacterType(const ECharacterType newCharacterType) { if (Role == ROLE_Authority) { CharacterType = newCharacterType; } }
 	ECharacterType GetCharcterType() const { return CharacterType; }
-
+	// * Stats & Attributes * //
 	TArray<FURpg_Stat_Struct> GetStats() const { return Stats; }
 	TArray<FURpg_Attribute_Struct> GetAttributes() const { return Attributes; }
+	TArray<class UURpg_StatusEffect*> GetActiveStatusEffects() { return ActiveStatusEffects; }
 
-
-	TArray<class UURpg_StatusEffect*> ActiveStatusEffects;
+	
 };

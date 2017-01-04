@@ -53,13 +53,11 @@ void AURpg_BasePowerUp::BeginPlay()
 
 // * TICK * //
 // Called every frame
-/*
 void AURpg_BasePowerUp::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
 }
-*/
 
 // * INTERFACES * //
 // IsPowerUp
@@ -142,7 +140,7 @@ void AURpg_BasePowerUp::BindHitEvents() {
 // Checks if actor is valid to use the powerup before activating
 void AURpg_BasePowerUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 	// Check that the overllaping actor is a character
-	if (OtherActor != nullptr && OtherActor->GetClass()->IsChildOf (ACharacter::StaticClass())) {
+	if (OtherActor != nullptr && OtherActor->GetClass()->IsChildOf (AURpg_Character::StaticClass())) {
 		// cast to a character
 		AURpg_Character* CharacterRef = Cast<AURpg_Character>(OtherActor);
 		if (CharacterRef != nullptr) {
@@ -159,3 +157,4 @@ void AURpg_BasePowerUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAct
 		}
 	}
 }
+

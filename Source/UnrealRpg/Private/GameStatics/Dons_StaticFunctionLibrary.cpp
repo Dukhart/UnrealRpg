@@ -3,7 +3,7 @@
 #include "UnrealRpg.h"
 #include "Dons_StaticFunctionLibrary.h"
 
-
+const FAttachmentTransformRules UDons_StaticFunctionLibrary::StandardComponentAttachRules = FAttachmentTransformRules::FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, false);
 
 // * INITIALIZATION * //
 // Constructor

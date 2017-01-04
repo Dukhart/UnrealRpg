@@ -92,7 +92,10 @@ float AURpg_Character::TakeDamage(float Damage, struct FDamageEvent const& Damag
 	return Damage;
 }
 void  AURpg_Character::OnDeath() {
-
+	// remove HUD elements
+	for (int32 i = 0; i < ActiveStatusEffects.Num(); i++) {
+		RemoveStatEffect(ActiveStatusEffects[i]);
+	}
 
 }
 
@@ -193,4 +196,13 @@ void AURpg_Character::UpdateStatWidget(EStatName stat) {
 			controlRef->GetHUDInstance()->UpdateStat(stat);
 		}
 	}
+}
+
+// add active effects
+void AURpg_Character::AddStatEffect(UURpg_StatusEffect* newEffect) {
+	ActiveStatusEffects.Add(newEffect);
+}
+// remove active effect
+void AURpg_Character::RemoveStatEffect(UURpg_StatusEffect* targetEffect) {
+	ActiveStatusEffects.Remove(targetEffect);
 }

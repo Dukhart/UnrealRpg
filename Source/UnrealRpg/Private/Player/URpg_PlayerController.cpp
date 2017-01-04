@@ -596,7 +596,7 @@ bool AURpg_PlayerController::AttachCameraToOwnedCharacter() {
 #endif // !UE_BUILD_SHIPPING
 
 			// attach the camera to the Player
-			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetCameraBoom(), USpringArmComponent::SocketName);
+			characterRef->GetPlayerCamera()->AttachToComponent(characterRef->GetCameraBoom(),UDons_StaticFunctionLibrary::StandardComponentAttachRules, USpringArmComponent::SocketName);
 			return true;
 		}
 	}
@@ -618,10 +618,10 @@ void AURpg_PlayerController::ActivateFirstPersonCamera() {
 		//Attach Camare to the head
 		USkeletalMeshSocket* sSocket = characterRef->GetMesh()->SkeletalMesh->FindSocket("Head");
 		if (sSocket != nullptr) {
-			characterRef->GetPlayerCamera()->AttachTo(characterRef->GetMesh(), sSocket->BoneName);
+			characterRef->GetPlayerCamera()->AttachToComponent(characterRef->GetMesh(),UDons_StaticFunctionLibrary::StandardComponentAttachRules, sSocket->BoneName);
 		}
 		else {
-			characterRef->GetPlayerCamera()->AttachTo(RootComponent);
+			characterRef->GetPlayerCamera()->AttachToComponent(RootComponent, UDons_StaticFunctionLibrary::StandardComponentAttachRules);
 		}
 
 		//characterRef->GetCharacterMovement()->bOrientRotationToMovement = false;

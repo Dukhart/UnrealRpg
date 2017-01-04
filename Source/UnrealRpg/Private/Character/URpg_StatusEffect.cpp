@@ -3,8 +3,6 @@
 #include "UnrealRpg.h"
 #include "URpg_StatusEffect.h"
 
-#include "URpg_StatusEffect.h"
-
 
 
 // * CONSTRUCTOR * //
@@ -99,16 +97,18 @@ void UURpg_StatusEffect::RunEffect(float DeltaTime) {
 }
 
 void UURpg_StatusEffect::Activate(AURpg_Character* TargetActor) {
-	if (bIsActive == false && TargetActor != nullptr) {
+	if (bIsActive == false && TargetActor != nullptr && TargetActor->GetGameInstance() != nullptr) {
+		if (WidgetStyle.GetDefaultObject() != nullptr) {
+			// create the widget corresponding to this status effect
+			WidgetInstance = CreateWidget<UURpg_StatusEffect_UserWidget>(TargetActor->GetGameInstance(), WidgetStyle);
+		}
 		// Set the Owner
 		Target = TargetActor;
 		// Get the World from the owner
 		if (Target != nullptr) {
-
-			Target->ActiveStatusEffects.Add(this);
-
 			UWorld* World = Target->GetWorld();
 			if (World != nullptr) {
+				Target->AddStatEffect(this);
 				// make sure current ticks is set to 0
 				Ticks = 0;
 				// set is active to true
@@ -153,7 +153,7 @@ void UURpg_StatusEffect::Reset() {
 void UURpg_StatusEffect::Remove() {
 	// Get the World from the owner
 	if (Target != nullptr) {
-		Target->ActiveStatusEffects.Remove(this);
+		Target->RemoveStatEffect(this);
 		UWorld* World = Target->GetWorld();
 		if (World != nullptr) {
 			World->GetTimerManager().ClearAllTimersForObject(this);

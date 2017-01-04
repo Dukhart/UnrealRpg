@@ -10,6 +10,9 @@
 #include "URpg_TextureAsset_Paths.h"
 #include "URpg_MeshAsset_Paths.h"
 
+// usefull global statics
+#include "Dons_StaticFunctionLibrary.h"
+
 // Custom  global game logic
 #include "URpg_GameInstance.h"
 #include "URpg_GameMode.h"
