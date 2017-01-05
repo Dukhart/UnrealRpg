@@ -6,7 +6,7 @@
 
 #include "URpg_IsPowerUp.h"
 #include "URpg_StatusEffect.h"
-
+#include "URpg_RecentActorData.h"
 #include "URpg_Character.h"
 
 #include "URpg_BasePowerUp.generated.h"
@@ -23,21 +23,7 @@ enum class EPowerUpStyle : uint8 {
 	// Then respawn after a time
 	Hybrid
 };
-/*
-USTRUCT(BlueprintType)
-struct UNREALRPG_API FRecentActorData {
-protected:
-	GENERATED_USTRUCT_BODY()
-public:
-	float duration;
-	AActor* actor;
 
-	FRecentActorData(AActor* InActor){
-		duration = 0.0f;
-		actor = InActor;
-	}
-};
-*/
 UCLASS()
 class UNREALRPG_API AURpg_BasePowerUp : public AActor, public IURpg_IsPowerUp
 {
@@ -89,7 +75,14 @@ protected:
 	// * ACTIVATION DELAY * //
 	// Contains a list of actors that recently used the powerup 
 	// used to prevent rapid activation of power up nodes
-	TArray<AURpg_Character*> RecentActors;
-	
+	UPROPERTY()
+	TArray<FURpg_RecentActorData> RecentActorData;
+	// should not be set by accessing directly instead use SetCharacterActivationDelay
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Prefrences", meta = (ClampMin = 0.01f))
+		float CharacterActivationDelay = 1.0f;
+public:
+	void SetCharacterActivationDelay(float newDelayTime) {
+		CharacterActivationDelay = newDelayTime < 0.1f ? 0.1f : newDelayTime;
+	}
 
 };

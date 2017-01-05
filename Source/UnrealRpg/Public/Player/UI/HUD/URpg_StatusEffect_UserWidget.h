@@ -12,10 +12,15 @@ UCLASS()
 class UNREALRPG_API UURpg_StatusEffect_UserWidget : public UURpg_Base_UserWidget
 {
 	GENERATED_BODY()
-	
+		UURpg_StatusEffect_UserWidget(const class FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 protected:
+
+	virtual void NativeTick(const FGeometry& Geometry, float DeltaTime) override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Settings")
 	float BlinkSpeed = 0;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Stats")
+	class UURpg_StatusEffect* StatusEffectRef;
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Settings")

@@ -31,8 +31,10 @@ AURpg_BasePowerUp::AURpg_BasePowerUp(const class FObjectInitializer& ObjectIniti
 	// Disable Collision on the Mesh
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	//PrimaryActorTick.bCanEverTick = true;
+ 	// Set this actor to be able to tick
+	PrimaryActorTick.bCanEverTick = true;
+	// start with tick disabled
+	PrimaryActorTick.SetTickFunctionEnable(false);
 	BindHitEvents();
 
 	// Add default Affected character types
@@ -55,15 +57,26 @@ void AURpg_BasePowerUp::BeginPlay()
 // Called every frame
 void AURpg_BasePowerUp::Tick( float DeltaTime )
 {
+	for (int32 i = 0; i < RecentActorData.Num(); ++i) {
+		RecentActorData[i].duration += DeltaTime;
+		if (RecentActorData[i].duration > CharacterActivationDelay) {
+			RecentActorData.RemoveAt(i, 1,false);
+		}
+	}
+	// resize Recent Actor data
+	RecentActorData.Shrink();
+	if (RecentActorData.Num() <= 0) {
+		// we only need to tick if tracking actors
+		PrimaryActorTick.SetTickFunctionEnable(false);
+	}
 	Super::Tick( DeltaTime );
-
 }
 
 // * INTERFACES * //
 // IsPowerUp
 void AURpg_BasePowerUp::ActivatePowerUp_Implementation(AURpg_Character* TargetActor) {
 #if !UE_BUILD_SHIPPING
-	UE_LOG(DebugLog, Warning, TEXT("Status Effect Stareat ACTIVATE"));
+	UE_LOG(DebugLog, Warning, TEXT("Status Effect Start ACTIVATE"));
 #endif // !UE_BUILD_SHIPPING
 	if (TargetActor != nullptr) {
 		// apply each effect of the power up
@@ -115,8 +128,8 @@ void AURpg_BasePowerUp::ActivatePowerUp_Implementation(AURpg_Character* TargetAc
 				// check if the power up was validated
 				if (bIsValid) {
 					// create a new instance of the effect
-					UURpg_StatusEffect* NewEffect = NewObject<UURpg_StatusEffect>(TargetActor, PowerUpEffects[i].GetDefaultObject()->GetClass(), *PowerUpEffects[i].GetDefaultObject()->GetName());
-					
+					//UURpg_StatusEffect* NewEffect = NewObject<UURpg_StatusEffect>(TargetActor, PowerUpEffects[i].GetDefaultObject()->GetClass(), *PowerUpEffects[i].GetDefaultObject()->GetName());
+					UURpg_StatusEffect* NewEffect = NewObject<UURpg_StatusEffect>(TargetActor, PowerUpEffects[i].GetDefaultObject()->GetClass());
 #if !UE_BUILD_SHIPPING
 					UE_LOG(DebugLog, Warning, TEXT("Status Effect ACTIVATE"));
 #endif // !UE_BUILD_SHIPPING
@@ -139,15 +152,31 @@ void AURpg_BasePowerUp::BindHitEvents() {
 }
 // Checks if actor is valid to use the powerup before activating
 void AURpg_BasePowerUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+	bool bAbort = false;
 	// Check that the overllaping actor is a character
 	if (OtherActor != nullptr && OtherActor->GetClass()->IsChildOf (AURpg_Character::StaticClass())) {
+		
+		// Check Actor timer
+		for (int32 i = 0; i < RecentActorData.Num(); i++)
+		{
+			if (RecentActorData[i].actor == OtherActor) {
+				bAbort = true;
+				break;
+			}
+		}
+
 		// cast to a character
 		AURpg_Character* CharacterRef = Cast<AURpg_Character>(OtherActor);
-		if (CharacterRef != nullptr) {
+		if (CharacterRef != nullptr && !bAbort) {
 			// Validate the character can use this power up
 			for (int32 i = 0; i < AffectedCharacterTypes.Num(); ++i) {
 				if (AffectedCharacterTypes[i] == CharacterRef->GetCharcterType()) {
 					// Activate the power up
+					RecentActorData.Add(FURpg_RecentActorData(OtherActor));
+					// enable tick as we now have an actor to track
+					if (PrimaryActorTick.IsTickFunctionEnabled() != true) {
+						PrimaryActorTick.SetTickFunctionEnable(true);
+					}
 					Execute_ActivatePowerUp(this, CharacterRef);
 					// break out of the loop we only want to activate the power up once
 					break;

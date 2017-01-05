@@ -18,6 +18,9 @@ UCLASS()
 class UNREALRPG_API UURpg_HUD_UserWidget : public UURpg_Base_UserWidget
 {
 	GENERATED_BODY()
+		UURpg_HUD_UserWidget(const class FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+protected:
+	virtual void NativeTick(const FGeometry& Geometry, float DeltaTime) override;
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Stats)
 		void UpdateStat(EStatName StatToChange);
