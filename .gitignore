@@ -8,6 +8,11 @@ Saved
 *.suo
 *.xcodeproj
 *.xcworkspace
+<<<<<<< HEAD
+UnrealRpg.VC.opendb
+UnrealRpg.VC.db
+=======
 .vs/config/applicationhost.config
 *.db
 UnrealRpg.VC.VC.opendb
+>>>>>>> refs/remotes/origin/master

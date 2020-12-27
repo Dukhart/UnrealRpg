@@ -1,18 +1,27 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #ifndef __UNREALRPG_H__
 #define __UNREALRPG_H__
 
-#include "EngineMinimal.h"
-// custom strings
-#include "Strings.h" // will be used for translating in game text elements between Languages
-#include "URLs.h"
-// Custom controllers
-#include "UnrealRpgPlayerController.h"
-#include "UnrealRpgPlayerCharacter.h"
-#include "UnrealRpgPlayerCameraManager.h"
+#include "Engine.h"
+
+// custom global asset path strings
+#include "URpg_BpAsset_Paths.h"
+#include "URpg_TextureAsset_Paths.h"
+#include "URpg_MeshAsset_Paths.h"
+
+// usefull global statics
+#include "Dons_StaticFunctionLibrary.h"
+
+// Custom  global game logic
+#include "URpg_GameInstance.h"
+#include "URpg_GameMode.h"
+
+// LOGS
 //General Log
 DECLARE_LOG_CATEGORY_EXTERN(GeneralLog, Log, All);
+//General debug Log
+DECLARE_LOG_CATEGORY_EXTERN(DebugLog, Log, All);
 //Logging during game startup
 DECLARE_LOG_CATEGORY_EXTERN(InitLog, Log, All);
 //Logging for your AI system
