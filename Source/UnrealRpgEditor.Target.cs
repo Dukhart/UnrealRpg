@@ -5,15 +5,17 @@ using System.Collections.Generic;
 
 public class UnrealRpgEditorTarget : TargetRules
 {
-	public UnrealRpgEditorTarget(TargetInfo Target)
+	public UnrealRpgEditorTarget(TargetInfo Target) : base (Target)
 	{
 		Type = TargetType.Editor;
+		DefaultBuildSettings = BuildSettingsVersion.V2;
+		ExtraModuleNames.AddRange( new string[] { "UnrealRpg" } );
 	}
 
 	//
 	// TargetRules interface.
 	//
-
+	/*
 	public override void SetupBinaries(
 		TargetInfo Target,
 		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
@@ -22,4 +24,5 @@ public class UnrealRpgEditorTarget : TargetRules
 	{
 		OutExtraModuleNames.Add("UnrealRpg");
 	}
+	*/
 }
